@@ -53,6 +53,10 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
         return mxMediaManager;
     }
 
+    public IjkMediaPlayer getPlayer() {
+        return mMediaPlayer;
+    }
+
     public void prepare(final String url, final Map<String, String> mapHeapData, boolean loop) {
         if (!TextUtils.isEmpty(url)) {
            Message msg = Message.obtain();
@@ -80,8 +84,9 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (MxVideoPlayerManager.getFirst() != null) {
-                    MxVideoPlayerManager.getFirst().onPrepared();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                if (listener != null) {
+                    listener.onPrepared();
                 }
             }
         });
@@ -92,8 +97,9 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (MxVideoPlayerManager.getFirst() != null) {
-                    MxVideoPlayerManager.getFirst().onBufferingUpdate(percent);
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                if (listener != null) {
+                    listener.onBufferingUpdate(percent);
                 }
             }
         });
@@ -104,8 +110,9 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (MxVideoPlayerManager.getFirst() != null) {
-                    MxVideoPlayerManager.getFirst().onCompletion();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                if (listener != null) {
+                    listener.onCompletion();
                 }
             }
         });
@@ -116,8 +123,9 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (MxVideoPlayerManager.getFirst() != null) {
-                    MxVideoPlayerManager.getFirst().onError(what, extra);
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                if (listener != null) {
+                    listener.onError(what, extra);
                 }
             }
         });
@@ -129,8 +137,9 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (MxVideoPlayerManager.getFirst() != null) {
-                    MxVideoPlayerManager.getFirst().onInfo(what, extra);
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                if (listener != null) {
+                    listener.onInfo(what, extra);
                 }
             }
         });
@@ -142,8 +151,9 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (MxVideoPlayerManager.getFirst() != null) {
-                    MxVideoPlayerManager.getFirst().onSeekComplete();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                if (listener != null) {
+                    listener.onSeekComplete();
                 }
             }
         });
@@ -156,8 +166,9 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (MxVideoPlayerManager.getFirst() != null) {
-                    MxVideoPlayerManager.getFirst().onVideoSizeChanged();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                if (listener != null) {
+                    listener.onVideoSizeChanged();
                 }
             }
         });
