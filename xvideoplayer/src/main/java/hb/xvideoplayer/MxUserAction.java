@@ -1,4 +1,4 @@
-package hb.xvideoplayer_lib;
+package hb.xvideoplayer;
 
 
 public interface MxUserAction {

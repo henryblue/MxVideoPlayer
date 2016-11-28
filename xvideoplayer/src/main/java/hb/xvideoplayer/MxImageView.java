@@ -1,4 +1,4 @@
-package hb.xvideoplayer_lib;
+package hb.xvideoplayer;
 
 import android.content.Context;
 import android.graphics.Point;

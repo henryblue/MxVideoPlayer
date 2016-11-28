@@ -1,4 +1,4 @@
-package hb.xvideoplayer_lib;
+package hb.xvideoplayer;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;

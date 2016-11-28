@@ -1,12 +1,14 @@
-package hb.xvideoplayer_lib;
+package hb.xvideoplayer;
 
 
+import android.graphics.Point;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Surface;
 
 import java.util.Map;
@@ -15,7 +17,7 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 
-public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaPlayer.OnCompletionListener,
+public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPlayer.OnCompletionListener,
         IMediaPlayer.OnBufferingUpdateListener, IMediaPlayer.OnSeekCompleteListener, IMediaPlayer.OnErrorListener,
         IMediaPlayer.OnVideoSizeChangedListener, IMediaPlayer.OnInfoListener {
 
@@ -31,8 +33,11 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
     private Handler mainThreadHandler;
     public static MxTextureView mTextureView;
 
-    private int mCurVideoWidth;
-    private int mCurVideoHeight;
+    public int mCurVideoWidth = 0;
+    public int mCurVideoHeight = 0;
+    public int bufferPercent = 0;
+    public int mVideoRotation;
+    public int mBackUpBufferState = -1;
 
     private MxMediaManager() {
         mMediaPlayer = new IjkMediaPlayer();
@@ -59,7 +64,7 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
 
     public void prepare(final String url, final Map<String, String> mapHeapData, boolean loop) {
         if (!TextUtils.isEmpty(url)) {
-           Message msg = Message.obtain();
+            Message msg = Message.obtain();
             msg.obj = new DataBean(url, mapHeapData, loop);
             msg.what = HANDLER_PREPARE;
             mMediaHandler.sendMessage(msg);
@@ -174,6 +179,14 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
         });
     }
 
+    public Point getVideoSize() {
+        if (mCurVideoWidth != 0 && mCurVideoHeight != 0) {
+            return new Point(mCurVideoWidth, mCurVideoHeight);
+        } else {
+            return null;
+        }
+    }
+
     private class MediaHandler extends Handler {
         public MediaHandler(Looper looper) {
             super(looper);
@@ -188,12 +201,10 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
                         mCurVideoWidth = 0;
                         mCurVideoHeight = 0;
                         mMediaPlayer.release();
-                        if (mMediaPlayer == null) {
-                            mMediaPlayer = new IjkMediaPlayer();
-                        }
+                        mMediaPlayer = new IjkMediaPlayer();
                         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         DataBean data = (DataBean) msg.obj;
-                        mMediaPlayer.setDataSource(data.url);
+                        mMediaPlayer.setDataSource(data.url, data.mapHeadData);
                         mMediaPlayer.setLooping(data.looping);
                         mMediaPlayer.setOnPreparedListener(MxMediaManager.this);
                         mMediaPlayer.setOnCompletionListener(MxMediaManager.this);
@@ -207,6 +218,7 @@ public class MxMediaManager  implements IMediaPlayer.OnPreparedListener, IMediaP
                         mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "reconnect", 1);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        Log.e(TAG, "handleMessage: prepare video error: " + e.getMessage());
                     }
                     break;
                 case HANDLER_SET_DISPLAY:
