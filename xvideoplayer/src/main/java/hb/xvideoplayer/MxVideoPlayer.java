@@ -6,6 +6,10 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
@@ -18,6 +22,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -47,6 +52,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     public static final int FULLSCREEN_ID = 446981;
     public static final int TINY_ID = 339961;
     public static final int FULL_SCREEN_NORMAL_DELAY = 500;
+    private static final int THRESHOLD = 80;
 
     public static final int SCREEN_LAYOUT_NORMAL = 0;
     public static final int SCREEN_LAYOUT_LIST = 1;
@@ -61,7 +67,8 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     public static final int CURRENT_STATE_AUTO_COMPLETE = 6;
     public static final int CURRENT_STATE_ERROR = 7;
 
-    private static final boolean WIFI_TIP_DIALOG_SHOWED = false;
+    protected static boolean WIFI_TIP_DIALOG_SHOWED = false;
+
     public static boolean ACTION_BAR_EXIST = true;
     public static boolean TOOL_BAR_EXIST = true;
     public static int FULLSCREEN_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_SENSOR; //由物理感应器决定显示方向
@@ -98,7 +105,17 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     private Surface mSurface;
     private boolean mTextureSizeChanged;
 
+    protected float mDownX;
+    protected float mDownY;
+    protected boolean mChangeVolume;
+    protected boolean mChangePosition;
+    protected int mDownPosition;
+    protected int mGestureDownVolume;
+    protected int mSeekTimePosition;
+
     protected boolean mTouchingProgressBar = false;
+
+    public static long mLastAutoFullscreenTime = 0;
 
     public static AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -152,7 +169,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         mHandler = new Handler();
     }
 
-    public boolean setUp(String url, int screen, Object... objects) {
+    public boolean startPlay(String url, int screen, Object... objects) {
         if (!TextUtils.isEmpty(mPlayUrl) && TextUtils.equals(mPlayUrl, url)) {
             return false;
         }
@@ -172,12 +189,11 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         if (url.equals(MxMediaManager.getInstance().getPlayer().getDataSource())) {
             MxVideoPlayerManager.putScrollListener(this);
         }
-        Log.d(TAG, "setUp: url===" + mPlayUrl);
         return true;
     }
 
-    public boolean setUp(String url, int screen, Map<String, String> dataMap, Object... objects) {
-        if (setUp(url, screen, objects)) {
+    public boolean startPlay(String url, int screen, Map<String, String> dataMap, Object... objects) {
+        if (startPlay(url, screen, objects)) {
             mDataMap.clear();
             mDataMap.putAll(dataMap);
             return true;
@@ -236,11 +252,111 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+        int id = v.getId();
+        if (id == R.id.mx_surface_container) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    Log.i(TAG, "onTouch: surfaceContainer actionDown [" + this.hashCode() + "] ");
+                    mTouchingProgressBar = true;
+                    mDownX = x;
+                    mDownY = y;
+                    mChangeVolume = false;
+                    mChangePosition = false;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    Log.i(TAG, "onTouch: surfaceContainer actionMove [" + this.hashCode() + "] ");
+                    float deltaX = x - mDownX;
+                    float deltaY = y - mDownY;
+                    float absDeltaX = Math.abs(deltaX);
+                    float absDeltaY = Math.abs(deltaY);
+                    if (mCurrentScreen == SCREEN_WINDOW_FULLSCREEN) {
+                        if (!mChangePosition && !mChangeVolume) {
+                            if (absDeltaX > THRESHOLD || absDeltaY > THRESHOLD) {
+                                cancelProgressTimer();
+                                if (absDeltaX >= THRESHOLD) { // adjust progress
+                                    if (mCurrentState != CURRENT_STATE_ERROR) {
+                                        mChangePosition = true;
+                                        mDownPosition = getCurrentPositionWhenPlaying();
+                                    }
+                                } else {  // adjust the volume
+                                    mChangeVolume = true;
+                                    mGestureDownVolume = mAudioManager.
+                                            getStreamVolume(AudioManager.STREAM_MUSIC);
+                                }
+                            }
+                        }
+                    }
+                    if (mChangePosition) {
+                        int totalTimeDuration = getDuration();
+                        mSeekTimePosition = (int) (mDownPosition + deltaX * totalTimeDuration / mScreenWidth);
+                        if (mSeekTimePosition > totalTimeDuration) {
+                            mSeekTimePosition = totalTimeDuration;
+                        }
+                        String seekTime = MxUtils.stringForTime(mSeekTimePosition);
+                        String totalTime = MxUtils.stringForTime(totalTimeDuration);
+                        showProgressDialog(deltaX, seekTime, mSeekTimePosition, totalTime, totalTimeDuration);
+                    }
+                    if (mChangeVolume) {
+                        deltaY = -deltaY;  // up is -, down is +
+                        int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                        int deltaV = (int) (maxVolume * deltaY * 3 / mScreenHeight);
+                        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mGestureDownVolume + deltaV, 0);
+                        int volumePercent = (int) (mGestureDownVolume * 100 / maxVolume + deltaY * 3 * 100 / mScreenHeight);
+                        showVolumeDialog(-deltaY, volumePercent);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    Log.i(TAG, "onTouch: surfaceContainer actionUp [" + this.hashCode() + "] ");
+                    mTouchingProgressBar = false;
+                    dismissProgressDialog();
+                    dismissVolumeDialog();
+                    if (mChangePosition) {
+                        onActionEvent(MxUserAction.ON_TOUCH_SCREEN_SEEK_POSITION);
+                        MxMediaManager.getInstance().getPlayer().seekTo(mSeekTimePosition);
+                        int duration = getDuration();
+                        int progress = mSeekTimePosition * 100 / (duration == 0 ? 1 : duration);
+                        mProgressBar.setProgress(progress);
+                    }
+                    if (mChangeVolume) {
+                        onActionEvent(MxUserAction.ON_TOUCH_SCREEN_SEEK_VOLUME);
+                    }
+                    startProgressTimer();
+                    break;
+                default:
+                    break;
+            }
+        }
         return false;
     }
 
-
     private void startWindowTiny() {
+        Log.i(TAG, "startWindowTiny: [" + this.hashCode() + "] ");
+        onActionEvent(MxUserAction.ON_ENTER_TINYSCREEN);
+        ViewGroup vp = (ViewGroup) MxUtils.scanForActivity(getContext())
+                .findViewById(Window.ID_ANDROID_CONTENT);
+        View oldView = vp.findViewById(TINY_ID);
+        if (oldView != null) {
+            vp.removeView(oldView);
+        }
+        if (mTextureViewContainer.getChildCount() > 0) {
+            mTextureViewContainer.removeAllViews();
+        }
+
+        try {
+            Constructor<MxVideoPlayer> constructor = (Constructor<MxVideoPlayer>) MxVideoPlayer.this.getClass().getConstructor(Context.class);
+            MxVideoPlayer mxVideoPlayer = constructor.newInstance(getContext());
+            mxVideoPlayer.setId(TINY_ID);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(410, 410);
+            params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+            vp.addView(mxVideoPlayer, params);
+            mxVideoPlayer.startPlay(mPlayUrl, SCREEN_WINDOW_TINY, mObjects);
+            mxVideoPlayer.setUiStateAndScreen(mCurrentState);
+            MxVideoPlayerManager.putListener(mxVideoPlayer);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -250,7 +366,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         hideSupportActionBar(getContext());
         MxUtils.getAppComptActivity(getContext()).setRequestedOrientation(FULLSCREEN_ORIENTATION);
 
-        ViewGroup vp = (ViewGroup)(MxUtils.scanForActivity(getContext()))
+        ViewGroup vp = (ViewGroup) (MxUtils.scanForActivity(getContext()))
                 .findViewById(Window.ID_ANDROID_CONTENT);
         View oldView = vp.findViewById(FULLSCREEN_ID);
         if (oldView != null) {
@@ -265,9 +381,9 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
             MxVideoPlayer mxVideoPlayer = constructor.newInstance(getContext());
             mxVideoPlayer.setId(FULLSCREEN_ID);
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
             vp.addView(mxVideoPlayer, params);
-            mxVideoPlayer.setUp(mPlayUrl, SCREEN_WINDOW_FULLSCREEN, mObjects);
+            mxVideoPlayer.startPlay(mPlayUrl, SCREEN_WINDOW_FULLSCREEN, mObjects);
             mxVideoPlayer.setUiStateAndScreen(mCurrentState);
             mxVideoPlayer.addTextureView();
             MxVideoPlayerManager.putListener(mxVideoPlayer);
@@ -296,7 +412,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
             vp.addView(jcVideoPlayer, lp);
 
-            jcVideoPlayer.setUp(url, SCREEN_WINDOW_FULLSCREEN, objects);
+            jcVideoPlayer.startPlay(url, SCREEN_WINDOW_FULLSCREEN, objects);
             jcVideoPlayer.addTextureView();
 
             jcVideoPlayer.mStartButton.performClick();
@@ -305,7 +421,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         }
     }
 
-    private boolean backPress() {
+    protected boolean backPress() {
         MxMediaPlayerListener listener = getFirst();
         return (listener != null && listener.backToOtherListener());
     }
@@ -379,7 +495,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         }
         if (TOOL_BAR_EXIST) {
             MxUtils.getAppComptActivity(context).getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
@@ -408,7 +524,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         cancelProgressTimer();
         mUpdateProgressTimer = new Timer();
         mProgressTimerTask = new ProgressTimerTask();
-        mUpdateProgressTimer.schedule(mProgressTimerTask, 0, 300);
+        mUpdateProgressTimer.schedule(mProgressTimerTask, 0, 500);
     }
 
     private void cancelProgressTimer() {
@@ -420,8 +536,12 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         }
     }
 
+    public static void setMxUserAction(MxUserAction userAction) {
+        mUserAction = new WeakReference<>(userAction);
+    }
     /**
      * collection user action
+     *
      * @param type action type
      */
     public void onActionEvent(int type) {
@@ -430,6 +550,12 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         }
     }
 
+    /**
+     * this method for different VideoPlayer with same url
+     * when fullscreen or tiny screen
+     *
+     * @return true or false
+     */
     private boolean isCurrentMediaListener() {
         return (getFirst() != null
                 && getFirst() == this);
@@ -449,11 +575,11 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         return pos;
     }
 
-    private int getDuration() {
+    public int getDuration() {
         int duration = 0;
         try {
             duration = (int) MxMediaManager.getInstance().getPlayer().getDuration();
-        }catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             e.printStackTrace();
             return duration;
         }
@@ -485,15 +611,13 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         mTotalTimeTextView.setText(MxUtils.stringForTime(totalTime));
     }
 
-    private void preparePlayVideo() {
+    protected void preparePlayVideo() {
         Log.i(TAG, "prepare play video [" + this.hashCode() + "] ");
         MxVideoPlayerManager.completeAll();
         MxVideoPlayerManager.putListener(this);
         addTextureView();
 
-        AudioManager audioManager = (AudioManager) getContext().
-                getSystemService(Context.AUDIO_SERVICE);
-        audioManager.requestAudioFocus(mOnAudioFocusChangeListener,
+        mAudioManager.requestAudioFocus(mOnAudioFocusChangeListener,
                 AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
         MxMediaManager.getInstance().prepare(mPlayUrl, mDataMap, mLooping);
         setUiStateAndScreen(CURRENT_STATE_PREPARING);
@@ -517,6 +641,21 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         mTextureViewContainer.addView(MxMediaManager.mTextureView, params);
         mCacheImageView.setVideoSize(MxMediaManager.getInstance().getVideoSize());
         mCacheImageView.setRotation(MxMediaManager.getInstance().mVideoRotation);
+    }
+
+    /**
+     * manual call release, only not fullscreen mode can call this
+     */
+    public void release() {
+        if (mPlayUrl.equals(MxMediaManager.getInstance().getPlayer().getDataSource()) &&
+                (System.currentTimeMillis() - CLICK_QUIT_FULLSCREEN_TIME) > FULL_SCREEN_NORMAL_DELAY) {
+            MxMediaPlayerListener firstListener = MxVideoPlayerManager.getFirst();
+            if (firstListener != null &&
+                    firstListener.getScreenType() != SCREEN_WINDOW_FULLSCREEN) {
+                Log.d(TAG, "manual release [" + this.hashCode() + "]");
+                releaseAllVideos();
+            }
+        }
     }
 
     public static void releaseAllVideos() {
@@ -563,8 +702,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         MxMediaManager.getInstance().bufferPercent = 0;
         MxMediaManager.getInstance().mVideoRotation = 0;
 
-        AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
-        audioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
+        mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
         MxUtils.scanForActivity(getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         clearFullscreenLayout();
         MxUtils.getAppComptActivity(getContext()).setRequestedOrientation(NORMAL_ORIENTATION);
@@ -623,32 +761,97 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void goBackThisListener() {
+        Log.i(TAG, "goBackThisListener: [" + this.hashCode() + "] ");
+        mCurrentState = MxMediaManager.getInstance().mLastState;
+        setUiStateAndScreen(mCurrentState);
+        addTextureView();
 
+        showSupportActionBar(getContext());
     }
 
     @Override
     public boolean backToOtherListener() {
+        obtainCache();
+        Log.i(TAG, "backToOtherListener: [" + this.hashCode() + "] ");
+        MxUtils.getAppComptActivity(getContext()).setRequestedOrientation(NORMAL_ORIENTATION);
+        if (mCurrentScreen == SCREEN_WINDOW_FULLSCREEN
+                || mCurrentScreen == SCREEN_WINDOW_TINY) {
+            onActionEvent(mCurrentScreen == SCREEN_WINDOW_FULLSCREEN ?
+                    MxUserAction.ON_QUIT_FULLSCREEN : MxUserAction.ON_QUIT_TINYSCREEN);
+            if (MxVideoPlayerManager.mListenerList.size() == 1) {
+                MxVideoPlayerManager.popListener().onCompletion();
+                MxMediaManager.getInstance().releaseMediaPlayer();
+                showSupportActionBar(getContext());
+                return true;
+            }
+            ViewGroup vp = (ViewGroup) MxUtils.scanForActivity(getContext())
+                    .findViewById(Window.ID_ANDROID_CONTENT);
+            vp.removeView(this);
+            MxMediaManager.getInstance().mLastState = mCurrentState;
+            MxVideoPlayerManager.popListener();
+            MxMediaPlayerListener firstListener = MxVideoPlayerManager.getFirst();
+            if (firstListener != null) {
+                firstListener.goBackThisListener();
+                CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
+                refreshCache();
+            } else {
+                MxVideoPlayerManager.completeAll();
+            }
+            return true;
+        }
         return false;
+    }
+
+    public static void onScroll() {
+        if (MxVideoPlayerManager.mCurScrollListener != null &&
+                MxVideoPlayerManager.mCurScrollListener.get() != null) {
+            MxMediaPlayerListener listener = MxVideoPlayerManager.mCurScrollListener.get();
+            if (listener.getState() != CURRENT_STATE_ERROR &&
+                    listener.getState() != CURRENT_STATE_AUTO_COMPLETE) {
+                listener.onScrollChange();
+            }
+        }
     }
 
     @Override
     public void onScrollChange() {
-
+        //judge enter fullscreen or tiny screen
+        if (mPlayUrl.equals(MxMediaManager.getInstance().getPlayer().getDataSource())) {
+            MxMediaPlayerListener firstListener = MxVideoPlayerManager.getFirst();
+            if (firstListener == null) {
+                return;
+            }
+            if (firstListener.getScreenType() == SCREEN_WINDOW_TINY) {
+                if (isShown()) {
+                    backPress();  // quit tiny screen
+                }
+            } else {
+                // if now playing is not tiny screen,
+                // when this not show enter tiny screen
+                if (!isShown()) {
+                    if (mCurrentState != CURRENT_STATE_PLAYING) {
+                        releaseAllVideos();
+                    } else {
+                        startWindowTiny();
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public int getScreenType() {
-        return 0;
+        return mCurrentScreen;
     }
 
     @Override
     public String getUrl() {
-        return null;
+        return mPlayUrl;
     }
 
     @Override
     public int getState() {
-        return 0;
+        return mCurrentState;
     }
 
     @Override
@@ -658,12 +861,30 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void autoFullscreen(float x) {
-
+        if (isCurrentMediaListener()
+                && mCurrentState == CURRENT_STATE_PLAYING
+                && mCurrentScreen != SCREEN_WINDOW_FULLSCREEN
+                && mCurrentScreen != SCREEN_WINDOW_TINY) {
+            if (x > 0) {
+                MxUtils.getAppComptActivity(getContext()).setRequestedOrientation(
+                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            } else {
+                MxUtils.getAppComptActivity(getContext()).setRequestedOrientation(
+                        ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+            }
+            startWindowFullscreen();
+        }
     }
 
     @Override
     public void autoQuitFullscreen() {
-
+        if ((System.currentTimeMillis() - mLastAutoFullscreenTime) > 2000
+                && isCurrentMediaListener()
+                && mCurrentState == CURRENT_STATE_PLAYING
+                && mCurrentScreen == SCREEN_WINDOW_FULLSCREEN) {
+            mLastAutoFullscreenTime = System.currentTimeMillis();
+            backPress();
+        }
     }
 
     @Override
@@ -702,12 +923,32 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-
+        Log.i(TAG, "onStartTrackingTouch: bottomProgress [" + this.hashCode() + "] ");
+        cancelProgressTimer();
+        ViewParent parent = getParent();
+        while (parent != null) {
+            parent.requestDisallowInterceptTouchEvent(true);
+            parent = parent.getParent();
+        }
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
+        Log.i(TAG, "onStopTrackingTouch: bottomProgress [" + this.hashCode() + "] ");
+        onActionEvent(MxUserAction.ON_SEEK_POSITION);
+        startProgressTimer();
+        ViewParent viewParent = getParent();
+        while (viewParent != null) {
+            viewParent.requestDisallowInterceptTouchEvent(false);
+            viewParent = viewParent.getParent();
+        }
+        if (mCurrentState != CURRENT_STATE_PLAYING
+                && mCurrentState != CURRENT_STATE_PAUSE) {
+            return;
+        }
+        int time = seekBar.getProgress() * getDuration() / 100;
+        MxMediaManager.getInstance().getPlayer().seekTo(time);
+        Log.i(TAG, "onStopTrackingTouch: seekTo " + time + " [" + this.hashCode() + "] ");
     }
 
     public class ProgressTimerTask extends TimerTask {
@@ -726,6 +967,40 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         }
     }
 
-    public abstract int getLayoutId();
-    public abstract void showWifiDialog();
+    public static class MxAutoFullscreenListener implements SensorEventListener {
+
+        @Override
+        public void onSensorChanged(SensorEvent event) { // 可以得到传感器实时测量出来的变化值
+            final float x = event.values[SensorManager.DATA_X];
+            float y = event.values[SensorManager.DATA_Y];
+            // 过滤掉用力过猛会有一个反向的大数值
+            if (((x > -15 && x < -10) || (x < 15 && x > 10)) && Math.abs(y) < 1.5) {
+                if ((System.currentTimeMillis() - mLastAutoFullscreenTime) > 2000) {
+                    MxMediaPlayerListener firstListener = MxVideoPlayerManager.getFirst();
+                    if (firstListener != null) {
+                        firstListener.autoFullscreen(x);
+                    }
+                    mLastAutoFullscreenTime = System.currentTimeMillis();
+                }
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    }
+
+    protected abstract int getLayoutId();
+
+    protected abstract void showWifiDialog();
+
+    protected abstract void showProgressDialog(float deltaX, String seekTime,
+                                               int seekTimePosition, String totalTime, int totalTimeDuration);
+
+    protected abstract void showVolumeDialog(float v, int volumePercent);
+
+    protected abstract void dismissVolumeDialog();
+
+    protected abstract void dismissProgressDialog();
 }

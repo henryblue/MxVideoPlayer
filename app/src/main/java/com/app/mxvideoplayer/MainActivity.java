@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         MxVideoPlayerWidget videoPlayerWidget = (MxVideoPlayerWidget) findViewById(R.id.mpw_video_player);
-        videoPlayerWidget.setUp("http://112.253.22.159/29/g/b/u/u/gbuustuaqwiwhhsvwhmnfvlolfdqnc/" +
+        videoPlayerWidget.startPlay("http://112.253.22.159/29/g/b/u/u/gbuustuaqwiwhhsvwhmnfvlolfdqnc/" +
                 "hc.yinyuetai.com/17F0015849548884B263584D615989A1.mp4",
                 MxVideoPlayerWidget.SCREEN_LAYOUT_NORMAL, "TIAMO 完整版");
     }

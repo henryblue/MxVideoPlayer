@@ -33,6 +33,7 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
     private Handler mainThreadHandler;
     public static MxTextureView mTextureView;
 
+    public int mLastState;
     public int mCurVideoWidth = 0;
     public int mCurVideoHeight = 0;
     public int bufferPercent = 0;
