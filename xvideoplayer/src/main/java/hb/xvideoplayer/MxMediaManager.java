@@ -118,7 +118,7 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
             public void run() {
                 MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
                 if (listener != null) {
-                    listener.onCompletion();
+                    listener.onAutoCompletion();
                 }
             }
         });

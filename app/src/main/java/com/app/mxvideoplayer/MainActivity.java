@@ -1,22 +1,40 @@
 package com.app.mxvideoplayer;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
+import android.view.View;
 
+import hb.xvideoplayer.MxTvPlayerWidget;
 import hb.xvideoplayer.MxVideoPlayer;
-import hb.xvideoplayer.MxVideoPlayerWidget;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "mxAppCompatActivity";
+    private MxTvPlayerWidget mVideoPlayerWidget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MxVideoPlayerWidget videoPlayerWidget = (MxVideoPlayerWidget) findViewById(R.id.mpw_video_player);
-        videoPlayerWidget.startPlay("http://112.253.22.159/29/g/b/u/u/gbuustuaqwiwhhsvwhmnfvlolfdqnc/" +
-                "hc.yinyuetai.com/17F0015849548884B263584D615989A1.mp4",
-                MxVideoPlayerWidget.SCREEN_LAYOUT_NORMAL, "TIAMO 完整版");
+        View decorView = getWindow().getDecorView();
+        int option = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(option);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
+
+        mVideoPlayerWidget = (MxTvPlayerWidget) findViewById(R.id.mpw_video_player);
+        mVideoPlayerWidget.startPlay("http://112.253.22.162/8/l/r/m/u/lrmuartyvcqytunfrqatzthrsrsmnm/" +
+                "hc.yinyuetai.com/A1460152D6652EB21A149B9DF5F7E92E.flv",
+                "LUV Apink");
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return mVideoPlayerWidget.requestKeyDown(keyCode, event);
     }
 
     @Override

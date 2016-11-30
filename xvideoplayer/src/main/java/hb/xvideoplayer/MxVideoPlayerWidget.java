@@ -512,7 +512,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.mx_video_layout_standard;
+        return R.layout.mx_video_layout_mobile;
     }
 
     @Override

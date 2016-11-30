@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <FrameLayout
+        android:id="@+id/mx_surface_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <hb.xvideoplayer.MxImageView
+        android:id="@+id/mx_cache"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"/>
+
+    <ImageView
+        android:id="@+id/mx_thumb"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:scaleType="fitCenter" />
+
+    <LinearLayout
+        android:id="@+id/mx_layout_top"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mx_layout_top_height"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:background="@drawable/mx_title_bg">
+
+        <TextView
+            android:id="@+id/mx_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/mx_iv_back_paddingLeft"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/mx_title_textSize"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mx_layout_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mx_layout_bottom_height"
+        android:layout_alignParentBottom="true"
+        android:background="#99000000"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:id="@+id/mx_current_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/mx_current_time_marginLeft"
+            android:text="@string/default_time_text"
+            android:textColor="@android:color/white" />
+
+        <SeekBar
+            android:id="@+id/mx_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1.0"
+            android:background="@null"
+            android:max="100"
+            android:maxHeight="@dimen/mx_progress_height"
+            android:minHeight="@dimen/mx_progress_height"
+            android:paddingBottom="@dimen/mx_progress_padding"
+            android:paddingTop="@dimen/mx_progress_padding"
+            android:progressDrawable="@drawable/mx_seek_progress"
+            android:thumb="@drawable/mx_seek_thumb" />
+
+        <TextView
+            android:id="@+id/mx_total_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/mx_total_time_marginRight"
+            android:text="@string/default_time_text"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/mx_bottom_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="1.5dp"
+        android:layout_alignParentBottom="true"
+        android:max="100"
+        android:progressDrawable="@drawable/mx_bottom_progress"/>
+
+    <ProgressBar
+        android:id="@+id/mx_loading"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminateDrawable="@drawable/mx_loading"
+        android:visibility="invisible"/>
+
+    <ImageView
+        android:id="@+id/mx_start"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/mx_click_play_selector"/>
+</RelativeLayout>

@@ -98,10 +98,10 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     public ViewGroup mTopContainer;
     private MxImageView mCacheImageView;
     private Bitmap mPauseSwitchCoverBitmap = null;
-    private int mScreenWidth;
-    private int mScreenHeight;
-    private AudioManager mAudioManager;
-    private Handler mHandler;
+    protected int mScreenWidth;
+    protected int mScreenHeight;
+    public AudioManager mAudioManager;
+    protected Handler mHandler;
     private Surface mSurface;
     private boolean mTextureSizeChanged;
 
@@ -157,7 +157,9 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         mCacheImageView = (MxImageView) findViewById(R.id.mx_cache);
 
         mStartButton.setOnClickListener(this);
-        mFullscreenButton.setOnClickListener(this);
+        if (mFullscreenButton != null) {
+            mFullscreenButton.setOnClickListener(this);
+        }
         mProgressBar.setOnSeekBarChangeListener(this);
         mBottomContainer.setOnClickListener(this);
         mTextureViewContainer.setOnClickListener(this);
@@ -561,7 +563,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                 && getFirst() == this);
     }
 
-    private int getCurrentPositionWhenPlaying() {
+    protected int getCurrentPositionWhenPlaying() {
         int pos = 0;
         if (mCurrentState == CURRENT_STATE_PLAYING || mCurrentState == CURRENT_STATE_PAUSE
                 || mCurrentState == CURRENT_STATE_PLAYING_BUFFERING_START) {
@@ -690,7 +692,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void onCompletion() {
-        Log.i(TAG, "onCompletion===============");
+        Log.i(TAG, "onCompletion==============");
         setUiStateAndScreen(CURRENT_STATE_NORMAL);
         if (mTextureViewContainer.getChildCount() > 0) {
             mTextureViewContainer.removeAllViews();
@@ -856,11 +858,18 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void onAutoCompletion() {
-
+        Log.i(TAG, "onAutoCompletion " + " [" + this.hashCode() + "] " + MxVideoPlayerManager.mListenerList.size());
+        onActionEvent(MxUserAction.ON_AUTO_COMPLETE);
+        dismissVolumeDialog();
+        dismissProgressDialog();
+        setUiStateAndScreen(CURRENT_STATE_AUTO_COMPLETE);
+        MxVideoPlayerManager.popListener();
+        MxVideoPlayerManager.completeAll();
     }
 
     @Override
     public void autoFullscreen(float x) {
+        Log.i(TAG, "autoFullscreen: [" + this.hashCode() + "] ");
         if (isCurrentMediaListener()
                 && mCurrentState == CURRENT_STATE_PLAYING
                 && mCurrentScreen != SCREEN_WINDOW_FULLSCREEN
@@ -878,6 +887,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void autoQuitFullscreen() {
+        Log.i(TAG, "autoQuitFullscreen: [" + this.hashCode() + "] ");
         if ((System.currentTimeMillis() - mLastAutoFullscreenTime) > 2000
                 && isCurrentMediaListener()
                 && mCurrentState == CURRENT_STATE_PLAYING
