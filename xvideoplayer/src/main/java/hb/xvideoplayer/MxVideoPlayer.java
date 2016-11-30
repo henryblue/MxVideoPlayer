@@ -134,7 +134,6 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                 }
             };
 
-
     public MxVideoPlayer(Context context) {
         this(context, null);
     }
@@ -621,6 +620,10 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
         mAudioManager.requestAudioFocus(mOnAudioFocusChangeListener,
                 AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+        // 禁止系统休眠
+        MxUtils.scanForActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        MxVideoPlayerManager.putScrollListener(this);
         MxMediaManager.getInstance().prepare(mPlayUrl, mDataMap, mLooping);
         setUiStateAndScreen(CURRENT_STATE_PREPARING);
     }
@@ -721,7 +724,6 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void onSeekComplete() {
-
     }
 
     @Override

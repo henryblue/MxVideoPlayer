@@ -10,20 +10,21 @@ import hb.xvideoplayer.MxTvPlayerWidget;
 import hb.xvideoplayer.MxVideoPlayer;
 
 
-public class MainActivity extends AppCompatActivity {
+public class TvActivity extends AppCompatActivity {
 
-    private static final String TAG = "mxAppCompatActivity";
     private MxTvPlayerWidget mVideoPlayerWidget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_tv);
         View decorView = getWindow().getDecorView();
         int option = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(option);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
 
         mVideoPlayerWidget = (MxTvPlayerWidget) findViewById(R.id.mpw_video_player);
         mVideoPlayerWidget.startPlay("http://112.253.22.162/8/l/r/m/u/lrmuartyvcqytunfrqatzthrsrsmnm/" +
