@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -25,6 +24,7 @@ import mxvideoplayer.app.com.xvideoplayer.R;
 public class MxTvPlayerWidget extends MxVideoPlayer {
 
     private static final int VOLUME_ITEM = 2;
+    private static final int PROGRESS_ITEM = 25;
 
     protected static Timer DISMISS_CONTROL_VIEW_TIMER;
 
@@ -36,24 +36,16 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     protected Dialog mVolumeDialog;
     protected ProgressBar mDialogVolumeProgressBar;
     protected ProgressBar mDialogProgressBar;
+
     protected TextView mDialogSeekTime;
     protected TextView mDialogTotalTime;
     protected ImageView mDialogIcon;
+    protected ImageView mDialogVolumeIcon;
+
+    private int mTvDownPosition = 0;
+    private int mTvSeekPosition;
 
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
-
-    protected Runnable mVolumeCallback = new Runnable() {
-        @Override
-        public void run() {
-            dismissVolumeDialog();
-        }
-    };
-    protected Runnable mProgressCallback = new Runnable() {
-        @Override
-        public void run() {
-            dismissProgressDialog();
-        }
-    };
 
     public MxTvPlayerWidget(Context context) {
         super(context);
@@ -84,13 +76,8 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     }
 
     public boolean requestKeyDown(int keyCode, KeyEvent event) {
-        Log.i(TAG, "requestKeyDown: keycODE: " + keyCode);
         boolean result = false;
         switch (keyCode) {
-            case KeyEvent.KEYCODE_ENTER:
-                mStartButton.performClick();
-                result = true;
-                break;
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 downVolume();
                 result = true;
@@ -100,11 +87,19 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
                 result = true;
                 break;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                doReverse();
+                cancelProgressTimer();
+                if (mTvDownPosition == 0) {
+                    mTvDownPosition = getCurrentPositionWhenPlaying();
+                }
+                doReverse(event.getRepeatCount());
                 result = true;
                 break;
-            case KeyEvent.KEYCODE_DPAD_DOWN_LEFT:
-                doForward();
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                cancelProgressTimer();
+                if (mTvDownPosition == 0) {
+                    mTvDownPosition = getCurrentPositionWhenPlaying();
+                }
+                doForward(event.getRepeatCount());
                 result = true;
                 break;
             case KeyEvent.KEYCODE_BACK:
@@ -112,48 +107,82 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
                 MxUtils.getAppComptActivity(getContext()).onBackPressed();
                 break;
             default:
-                onClickUiToggle();
                 break;
         }
         return result;
     }
 
+    public boolean requestKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_ENTER:
+                mStartButton.performClick();
+                break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                startProgressTimer();
+                setProgress();
+                dismissProgressDialog();
+                break;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                dismissVolumeDialog();
+                break;
+            default:
+                onClickUiToggle();
+                startDismissControlViewTimer();
+                break;
+        }
+        return false;
+    }
+
     private void downVolume() {
-        mHandler.removeCallbacks(mVolumeCallback);
         int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume - VOLUME_ITEM, 0);
         int volumePercent = (currentVolume - VOLUME_ITEM) * 100 / maxVolume;
         showVolumeDialog(VOLUME_ITEM, volumePercent);
-        mHandler.postDelayed(mVolumeCallback, 2000);
     }
 
     private void upVolume() {
-        mHandler.removeCallbacks(mVolumeCallback);
         int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume + VOLUME_ITEM, 0);
         int volumePercent = (currentVolume + VOLUME_ITEM) * 100 / maxVolume;
         showVolumeDialog(VOLUME_ITEM, volumePercent);
-        mHandler.postDelayed(mVolumeCallback, 2000);
     }
 
-    private void doReverse() {
-//        mHandler.removeCallbacks(mProgressCallback);
-//        int totalTimeDuration = getDuration();
-//        int seekTimePosition = (int) (mReverseDownPos + totalTimeDuration / mScreenWidth * mReverseDownCount);
-//        mReverseDownCount++;
-//        if (seekTimePosition > totalTimeDuration) {
-//            seekTimePosition = totalTimeDuration;
-//        }
-//        String seekTime = MxUtils.stringForTime(seekTimePosition);
-//        String totalTime = MxUtils.stringForTime(totalTimeDuration);
-//        Log.i(TAG, "doReverse: seekTime:" + seekTimePosition + "==totalTime: " + totalTimeDuration + "==curPos:" + mReverseDownPos);
-//        showProgressDialog(PROGRESS_TOTAL_TIME, seekTime, seekTimePosition, totalTime, totalTimeDuration);
-//        mHandler.postDelayed(mProgressCallback, 2000);
+    private void doReverse(int count) {
+        if (count <= 0) {
+            count = 1;
+        }
+        int totalTimeDuration = getDuration();
+        int seekTimePosition = mTvDownPosition + PROGRESS_ITEM * count * totalTimeDuration / mScreenWidth;
+        if (seekTimePosition > totalTimeDuration) {
+            seekTimePosition = totalTimeDuration;
+        }
+        String seekTime = MxUtils.stringForTime(seekTimePosition);
+        String totalTime = MxUtils.stringForTime(totalTimeDuration);
+        showProgressDialog(PROGRESS_ITEM, seekTime, seekTimePosition, totalTime, totalTimeDuration);
     }
 
-    private void doForward() {
+    private void doForward(int count) {
+        if (count <= 0) {
+            count = 1;
+        }
+        int totalTimeDuration = getDuration();
+        int seekTimePosition = mTvDownPosition - PROGRESS_ITEM * count * totalTimeDuration / mScreenWidth;
+        if (seekTimePosition < 0) {
+            seekTimePosition = 0;
+        }
+        String seekTime = MxUtils.stringForTime(seekTimePosition);
+        String totalTime = MxUtils.stringForTime(totalTimeDuration);
+        showProgressDialog(-PROGRESS_ITEM, seekTime, seekTimePosition, totalTime, totalTimeDuration);
+    }
+
+    private void setProgress() {
+        MxMediaManager.getInstance().getPlayer().seekTo(mTvSeekPosition);
+        mProgressBar.setProgress(mDialogProgressBar.getProgress());
+        mTvDownPosition = 0;
     }
 
     @Override
@@ -391,7 +420,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
             mProgressDialog.getWindow().setLayout(-2, -2);
             WindowManager.LayoutParams localLayoutParams = mProgressDialog.getWindow().getAttributes();
             localLayoutParams.gravity = 49;
-            localLayoutParams.y = getResources().getDimensionPixelOffset(R.dimen.mx_progress_dialog_margin_top);
+            localLayoutParams.y = getResources().getDimensionPixelOffset(R.dimen.mx_tv_progress_dialog_margin_top);
             mProgressDialog.getWindow().setAttributes(localLayoutParams);
         }
         if (!mProgressDialog.isShowing()) {
@@ -400,8 +429,8 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
 
         mDialogSeekTime.setText(seekTime);
         mDialogTotalTime.setText(String.format(" / %s", totalTime));
+        mTvSeekPosition = seekTimePosition;
         int curProgress = seekTimePosition * 100 / totalTimeDuration;
-        Log.i(TAG, "showProgressDialog: curProgress: " + curProgress);
         mDialogProgressBar.setProgress(totalTimeDuration <= 0 ? 0 : curProgress);
         if (deltaX > 0) {
             mDialogIcon.setBackgroundResource(R.drawable.mx_forward_icon);
@@ -413,8 +442,9 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     @Override
     protected void showVolumeDialog(float v, int volumePercent) {
         if (mVolumeDialog == null) {
-            View localView = View.inflate(getContext(), R.layout.mx_volume_dialog, null);
+            View localView = View.inflate(getContext(), R.layout.mx_tv_volume_dialog, null);
             mDialogVolumeProgressBar = ((ProgressBar) localView.findViewById(R.id.volume_progressbar));
+            mDialogVolumeIcon = (ImageView) localView.findViewById(R.id.mx_volume_icon);
             mVolumeDialog = new Dialog(getContext(), R.style.mx_style_dialog_progress);
             mVolumeDialog.setContentView(localView);
             mVolumeDialog.getWindow().addFlags(8);
@@ -422,13 +452,18 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
             mVolumeDialog.getWindow().addFlags(16);
             mVolumeDialog.getWindow().setLayout(-2, -2);
             WindowManager.LayoutParams localLayoutParams = mVolumeDialog.getWindow().getAttributes();
-            localLayoutParams.gravity = 19;
-            localLayoutParams.x = getContext().getResources()
-                    .getDimensionPixelOffset(R.dimen.mx_volume_dialog_margin_left);
+            localLayoutParams.gravity = 49;
+            localLayoutParams.y = getContext().getResources()
+                    .getDimensionPixelOffset(R.dimen.mx_tv_progress_dialog_margin_top);
             mVolumeDialog.getWindow().setAttributes(localLayoutParams);
         }
         if (!mVolumeDialog.isShowing()) {
             mVolumeDialog.show();
+        }
+        if (volumePercent <= 0) {
+            mDialogVolumeIcon.setImageResource(R.drawable.mx_volume_no);
+        } else {
+            mDialogVolumeIcon.setImageResource(R.drawable.mx_volume_icon);
         }
         mDialogVolumeProgressBar.setProgress(volumePercent);
     }

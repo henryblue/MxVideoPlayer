@@ -39,9 +39,13 @@ public class TvActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        return mVideoPlayerWidget.requestKeyUp(keyCode, event);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         MxVideoPlayer.releaseAllVideos();
     }
-
 }

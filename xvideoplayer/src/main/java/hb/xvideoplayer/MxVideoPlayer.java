@@ -90,7 +90,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     public ImageView mStartButton;
     public ImageView mFullscreenButton;
-    private SeekBar mProgressBar;
+    protected SeekBar mProgressBar;
     private TextView mCurrentTimeTextView;
     private TextView mTotalTimeTextView;
     public ViewGroup mBottomContainer;
@@ -101,7 +101,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     protected int mScreenWidth;
     protected int mScreenHeight;
     public AudioManager mAudioManager;
-    protected Handler mHandler;
+    private Handler mHandler;
     private Surface mSurface;
     private boolean mTextureSizeChanged;
 
@@ -422,7 +422,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         }
     }
 
-    protected boolean backPress() {
+    public static boolean backPress() {
         MxMediaPlayerListener listener = getFirst();
         return (listener != null && listener.backToOtherListener());
     }
@@ -521,14 +521,14 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         mTotalTimeTextView.setText(MxUtils.stringForTime(0));
     }
 
-    private void startProgressTimer() {
+    protected void startProgressTimer() {
         cancelProgressTimer();
         mUpdateProgressTimer = new Timer();
         mProgressTimerTask = new ProgressTimerTask();
         mUpdateProgressTimer.schedule(mProgressTimerTask, 0, 500);
     }
 
-    private void cancelProgressTimer() {
+    protected void cancelProgressTimer() {
         if (mUpdateProgressTimer != null) {
             mUpdateProgressTimer.cancel();
         }

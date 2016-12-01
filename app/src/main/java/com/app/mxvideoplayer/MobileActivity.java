@@ -27,4 +27,11 @@ public class MobileActivity extends AppCompatActivity {
         MxVideoPlayer.releaseAllVideos();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (MxVideoPlayer.backPress()) {
+            return;
+        }
+        super.onBackPressed();
+    }
 }

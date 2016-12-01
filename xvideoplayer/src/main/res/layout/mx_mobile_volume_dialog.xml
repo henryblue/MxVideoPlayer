@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/mx_dialog_progress_bg">
+
+    <LinearLayout
+        android:layout_width="@dimen/mobile_volume_dialog_ll_width"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/volume_progressbar"
+            style="@style/mx_vertical_progressBar"
+            android:layout_width="@dimen/mobile_volume_dialog_pg_width"
+            android:layout_height="@dimen/mobile_volume_dialog_pg_height"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/mobile_volume_dialog_pg_marginTop"
+            android:max="100" />
+
+        <ImageView
+            android:layout_width="@dimen/mobile_volume_dialog_iv_width"
+            android:layout_height="@dimen/mobile_volume_dialog_iv_height"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/mobile_volume_dialog_iv_marginBottom"
+            android:layout_marginTop="@dimen/mobile_volume_dialog_iv_marginTop"
+            android:src="@drawable/mx_volume_icon" />
+
+    </LinearLayout>
+</RelativeLayout>

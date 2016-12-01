@@ -25,7 +25,7 @@
     <LinearLayout
         android:id="@+id/mx_layout_top"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/mx_layout_top_height"
+        android:layout_height="@dimen/mx_tv_layout_top_height"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:background="@drawable/mx_title_bg">
@@ -34,9 +34,9 @@
             android:id="@+id/mx_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/mx_iv_back_paddingLeft"
+            android:paddingLeft="@dimen/mx_tv_iv_back_paddingLeft"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/mx_title_textSize"/>
+            android:textSize="@dimen/mx_tv_title_textSize"/>
     </LinearLayout>
 
     <LinearLayout
@@ -69,6 +69,8 @@
             android:minHeight="@dimen/mx_progress_height"
             android:paddingBottom="@dimen/mx_progress_padding"
             android:paddingTop="@dimen/mx_progress_padding"
+            android:focusable="false"
+            android:clickable="false"
             android:progressDrawable="@drawable/mx_seek_progress"
             android:thumb="@drawable/mx_seek_thumb" />
 
@@ -93,8 +95,8 @@
 
     <ProgressBar
         android:id="@+id/mx_loading"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="@dimen/mx_tv_loading_width"
+        android:layout_height="@dimen/mx_tv_loading_height"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:indeterminateDrawable="@drawable/mx_loading"
@@ -102,8 +104,8 @@
 
     <ImageView
         android:id="@+id/mx_start"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="@dimen/mx_tv_start_btn_width"
+        android:layout_height="@dimen/mx_tv_start_btn_height"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:src="@drawable/mx_click_play_selector"/>

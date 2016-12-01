@@ -573,7 +573,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     @Override
     protected void showVolumeDialog(float v, int volumePercent) {
         if (mVolumeDialog == null) {
-            View localView = View.inflate(getContext(), R.layout.mx_volume_dialog, null);
+            View localView = View.inflate(getContext(), R.layout.mx_mobile_volume_dialog, null);
             mDialogVolumeProgressBar = ((ProgressBar) localView.findViewById(R.id.volume_progressbar));
             mVolumeDialog = new Dialog(getContext(), R.style.mx_style_dialog_progress);
             mVolumeDialog.setContentView(localView);

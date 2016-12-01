@@ -117,8 +117,8 @@
 
     <ProgressBar
         android:id="@+id/mx_loading"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="@dimen/mx_loading_width"
+        android:layout_height="@dimen/mx_loading_height"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:indeterminateDrawable="@drawable/mx_loading"
@@ -126,8 +126,8 @@
 
     <ImageView
         android:id="@+id/mx_start"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="@dimen/mx_start_btn_width"
+        android:layout_height="@dimen/mx_start_btn_height"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:src="@drawable/mx_click_play_selector"/>
