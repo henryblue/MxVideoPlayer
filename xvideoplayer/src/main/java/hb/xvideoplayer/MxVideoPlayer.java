@@ -987,7 +987,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
             float y = event.values[SensorManager.DATA_Y];
             // 过滤掉用力过猛会有一个反向的大数值
             if (((x > -15 && x < -10) || (x < 15 && x > 10)) && Math.abs(y) < 1.5) {
-                if ((System.currentTimeMillis() - mLastAutoFullscreenTime) > 2000) {
+                if ((System.currentTimeMillis() - mLastAutoFullscreenTime) > 1200) {
                     MxMediaPlayerListener firstListener = MxVideoPlayerManager.getFirst();
                     if (firstListener != null) {
                         firstListener.autoFullscreen(x);
