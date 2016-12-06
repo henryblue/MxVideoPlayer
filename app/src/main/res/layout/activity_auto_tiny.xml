@@ -3,27 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <hb.xvideoplayer.MxVideoPlayerWidget
-        android:id="@+id/mpw_video_player"
-        android:layout_width="match_parent"
-        android:layout_height="210dp" />
     
     <Button
-        android:id="@+id/button_list"
+        android:id="@+id/button_auto_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="List Video Demo"
+        android:text="Auto List Video Demo"
         android:textColor="@android:color/black"
         android:textAllCaps="false"
         android:layout_margin="8dp"
         android:textSize="16sp"/>
 
     <Button
-        android:id="@+id/button_auto_list"
+        android:id="@+id/button_insert_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Auto tiny window"
+        android:text="Video insert into List"
         android:textColor="@android:color/black"
         android:textAllCaps="false"
         android:layout_margin="8dp"

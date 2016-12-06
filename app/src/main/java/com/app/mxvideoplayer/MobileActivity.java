@@ -30,6 +30,15 @@ public class MobileActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button buttonAutoList = (Button) findViewById(R.id.button_auto_list);
+        buttonAutoList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MobileActivity.this, AutoTinyWindowActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

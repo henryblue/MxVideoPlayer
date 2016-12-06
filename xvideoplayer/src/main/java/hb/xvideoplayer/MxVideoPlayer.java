@@ -349,11 +349,12 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
             Constructor<MxVideoPlayer> constructor = (Constructor<MxVideoPlayer>) MxVideoPlayer.this.getClass().getConstructor(Context.class);
             MxVideoPlayer mxVideoPlayer = constructor.newInstance(getContext());
             mxVideoPlayer.setId(TINY_ID);
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(410, 410);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(430, 400);
             params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
             vp.addView(mxVideoPlayer, params);
             mxVideoPlayer.startPlay(mPlayUrl, SCREEN_WINDOW_TINY, mObjects);
             mxVideoPlayer.setUiStateAndScreen(mCurrentState);
+            mxVideoPlayer.addTextureView();
             MxVideoPlayerManager.putListener(mxVideoPlayer);
         } catch (Exception e) {
             e.printStackTrace();
@@ -685,7 +686,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void onPrepared() {
-        Log.i(TAG, "onPrepared================");
+        Log.i(TAG, "onPrepared====[" + this.hashCode() + "] ");
         if (mCurrentState != CURRENT_STATE_PREPARING) {
             return;
         }
@@ -695,7 +696,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void onCompletion() {
-        Log.i(TAG, "onCompletion==============");
+        Log.i(TAG, "onCompletion====[" + this.hashCode() + "] ");
         setUiStateAndScreen(CURRENT_STATE_NORMAL);
         if (mTextureViewContainer.getChildCount() > 0) {
             mTextureViewContainer.removeAllViews();
