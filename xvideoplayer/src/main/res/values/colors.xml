@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="progress_color">#fff85959</color>
+    <color name="progress_color">#ff9800</color>
     <color name="secProgress_color">#ffe0e0e0</color>
     <color name="solid_color">#4c000000</color>
     <color name="gary">#cc999999</color>
