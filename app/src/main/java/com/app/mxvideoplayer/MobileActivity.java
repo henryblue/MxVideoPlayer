@@ -39,6 +39,16 @@ public class MobileActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button btnFullscreen = (Button) findViewById(R.id.button_auto_fullscreen);
+        btnFullscreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MxVideoPlayerWidget.startFullscreen(MobileActivity.this, MxVideoPlayerWidget.class,
+                        "http://112.253.22.162/8/l/r/m/u/lrmuartyvcqytunfrqatzthrsrsmnm/hc.yinyuetai.com/A1460152D6652EB21A149B9DF5F7E92E.flv"
+                , "LUV Apink");
+            }
+        });
     }
 
     @Override

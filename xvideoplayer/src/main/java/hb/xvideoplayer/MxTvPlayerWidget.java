@@ -383,6 +383,11 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     }
 
     @Override
+    protected void initAttributeSet(Context context, AttributeSet attrs) {
+
+    }
+
+    @Override
     protected void showWifiDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage(getResources().getString(R.string.tips_not_wifi));

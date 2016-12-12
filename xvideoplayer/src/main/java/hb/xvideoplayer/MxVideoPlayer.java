@@ -102,7 +102,6 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     protected int mScreenHeight;
     public AudioManager mAudioManager;
     private Handler mHandler;
-    private Surface mSurface;
     private boolean mTextureSizeChanged;
 
     protected float mDownX;
@@ -141,6 +140,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     public MxVideoPlayer(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
+        initAttributeSet(context, attrs);
     }
 
     public void initView(Context context) {
@@ -396,7 +396,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     }
 
     public static void startFullscreen(Context context, Class _class, String url, Object... objects) {
-
+        Log.i(TAG, "startFullscreen: ===manual fullscreen===");
         hideSupportActionBar(context);
         MxUtils.getAppComptActivity(context).setRequestedOrientation(FULLSCREEN_ORIENTATION);
         ViewGroup vp = (ViewGroup) (MxUtils.scanForActivity(context))
@@ -541,6 +541,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     public static void setMxUserAction(MxUserAction userAction) {
         mUserAction = new WeakReference<>(userAction);
     }
+
     /**
      * collection user action
      *
@@ -636,7 +637,8 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         }
         MxMediaManager.mTextureView = null;
         MxMediaManager.mTextureView = new MxTextureView(getContext());
-        MxMediaManager.mTextureView.setVideoSize(MxMediaManager.getInstance().getVideoSize());
+        Point videoSize = MxMediaManager.getInstance().getVideoSize();
+        MxMediaManager.mTextureView.setVideoSize(videoSize);
         MxMediaManager.mTextureView.setRotation(MxMediaManager.getInstance().mVideoRotation);
         MxMediaManager.mTextureView.setSurfaceTextureListener(this);
 
@@ -645,7 +647,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 Gravity.CENTER);
         mTextureViewContainer.addView(MxMediaManager.mTextureView, params);
-        mCacheImageView.setVideoSize(MxMediaManager.getInstance().getVideoSize());
+        mCacheImageView.setVideoSize(videoSize);
         mCacheImageView.setRotation(MxMediaManager.getInstance().mVideoRotation);
     }
 
@@ -751,7 +753,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         } else if (what == IMediaPlayer.MEDIA_INFO_VIDEO_ROTATION_CHANGED) {
             MxMediaManager.getInstance().mVideoRotation = extra;
             MxMediaManager.mTextureView.setRotation(extra);
-            mCacheImageView.setRotation(MxMediaManager.getInstance().mVideoRotation);
+            mCacheImageView.setRotation(extra);
             Log.i(TAG, "MEDIA_INFO_VIDEO_ROTATION_CHANGED");
         }
     }
@@ -784,7 +786,10 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
             onActionEvent(mCurrentScreen == SCREEN_WINDOW_FULLSCREEN ?
                     MxUserAction.ON_QUIT_FULLSCREEN : MxUserAction.ON_QUIT_TINYSCREEN);
             if (MxVideoPlayerManager.mListenerList.size() == 1) {
-                MxVideoPlayerManager.popListener().onCompletion();
+                MxMediaPlayerListener popListener = MxVideoPlayerManager.popListener();
+                if (popListener != null) {
+                    popListener.onCompletion();
+                }
                 MxMediaManager.getInstance().releaseMediaPlayer();
                 showSupportActionBar(getContext());
                 return true;
@@ -903,7 +908,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         Log.i(TAG, "onSurfaceTextureAvailable [" + this.hashCode() + "] ");
-        mSurface = new Surface(surface);
+        Surface mSurface = new Surface(surface);
         MxMediaManager.getInstance().setDisplay(mSurface);
     }
 
@@ -1005,6 +1010,8 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     }
 
     protected abstract int getLayoutId();
+
+    protected abstract void initAttributeSet(Context context, AttributeSet attrs);
 
     protected abstract void showWifiDialog();
 

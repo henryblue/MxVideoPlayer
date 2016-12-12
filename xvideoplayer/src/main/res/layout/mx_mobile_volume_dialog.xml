@@ -8,16 +8,6 @@
         android:layout_width="@dimen/mobile_volume_dialog_ll_width"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <ProgressBar
-            android:id="@+id/volume_progressbar"
-            style="@style/mx_vertical_progressBar"
-            android:layout_width="@dimen/mobile_volume_dialog_pg_width"
-            android:layout_height="@dimen/mobile_volume_dialog_pg_height"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/mobile_volume_dialog_pg_marginTop"
-            android:max="100" />
-
         <ImageView
             android:layout_width="@dimen/mobile_volume_dialog_iv_width"
             android:layout_height="@dimen/mobile_volume_dialog_iv_height"
@@ -25,6 +15,19 @@
             android:layout_marginBottom="@dimen/mobile_volume_dialog_iv_marginBottom"
             android:layout_marginTop="@dimen/mobile_volume_dialog_iv_marginTop"
             android:src="@drawable/mx_volume_icon" />
+
+        <ProgressBar
+            android:id="@+id/volume_progressbar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/mobile_dialog_progress_height"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/mobile_dialog_progress_marginBottom"
+            android:layout_marginLeft="@dimen/mobile_dialog_progress_marginLeft"
+            android:layout_marginRight="@dimen/mobile_dialog_progress_marginRight"
+            android:layout_marginTop="@dimen/mobile_dialog_progress_marginTop"
+            android:max="100"
+            android:progressDrawable="@drawable/mx_dialog_progress" />
 
     </LinearLayout>
 </RelativeLayout>

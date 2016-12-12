@@ -52,7 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/mx_layout_bottom_height"
         android:layout_alignParentBottom="true"
-        android:background="#99000000"
+        android:background="@drawable/mx_bottom_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:visibility="invisible">

@@ -1,5 +1,7 @@
 package hb.xvideoplayer;
 
+import android.text.TextUtils;
+
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 
@@ -21,10 +23,16 @@ public class MxVideoPlayerManager {
     }
 
     public static void putListener(MxMediaPlayerListener listener) {
+        if (listener == null) {
+            return;
+        }
         mListenerList.push(new WeakReference<>(listener));
     }
 
     public static void checkAndPutListener(MxMediaPlayerListener listener) {
+        if (listener == null || mListenerList == null) {
+            return;
+        }
         if (listener.getScreenType() == MxVideoPlayer.SCREEN_WINDOW_TINY ||
                 listener.getScreenType() == MxVideoPlayer.SCREEN_WINDOW_FULLSCREEN) {
             return;
@@ -32,7 +40,9 @@ public class MxVideoPlayerManager {
         int location = -1;
         for (int i = 1; i < mListenerList.size(); ++i) {
             MxMediaPlayerListener mediaPlayerListener = mListenerList.get(i).get();
-            if (listener.getUrl().equals(mediaPlayerListener.getUrl())) {
+            String url = listener.getUrl();
+            String url1 = mediaPlayerListener.getUrl();
+            if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(url1) && url.equals(url1)) {
                 location = i;
             }
         }

@@ -6,8 +6,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -42,6 +45,21 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     protected ImageView mDialogIcon;
 
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
+
+    public enum Mode {
+        MODE_NORMAL,
+        MODE_PREPARING,
+        MODE_PREPARING_CLEAR,
+        MODE_PLAYING,
+        MODE_PLAYING_CLEAR,
+        MODE_PAUSE,
+        MODE_PAUSE_CLEAR,
+        MODE_COMPLETE,
+        MODE_COMPLETE_CLEAR,
+        MODE_BUFFERING,
+        MODE_BUFFERING_CLEAR,
+        MODE_ERROR
+    }
 
     public MxVideoPlayerWidget(Context context) {
         super(context);
@@ -97,30 +115,30 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         super.setUiStateAndScreen(state);
         switch (mCurrentState) {
             case CURRENT_STATE_NORMAL:
-                changeUiToNormal();
+                changeUiShowState(Mode.MODE_NORMAL);
                 break;
             case CURRENT_STATE_PREPARING:
-                changeUiToPreparingShow();
+                changeUiShowState(Mode.MODE_PREPARING);
                 startDismissControlViewTimer();
                 break;
             case CURRENT_STATE_PLAYING:
-                changeUiToPlayingShow();
+                changeUiShowState(Mode.MODE_PLAYING);
                 startDismissControlViewTimer();
                 break;
             case CURRENT_STATE_PAUSE:
-                changeUiToPauseShow();
+                changeUiShowState(Mode.MODE_PAUSE);
                 cancelDismissControlViewTimer();
                 break;
             case CURRENT_STATE_ERROR:
-                changeUiToError();
+                changeUiShowState(Mode.MODE_ERROR);
                 break;
             case CURRENT_STATE_AUTO_COMPLETE:
-                changeUiToCompleteShow();
+                changeUiShowState(Mode.MODE_COMPLETE);
                 cancelDismissControlViewTimer();
                 mBottomProgressBar.setProgress(100);
                 break;
             case CURRENT_STATE_PLAYING_BUFFERING_START:
-                changeUiToPlayingBufferingShow();
+                changeUiShowState(Mode.MODE_BUFFERING);
                 break;
             default:
                 break;
@@ -164,123 +182,96 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     private void onClickUiToggle() {
         if (mCurrentState == CURRENT_STATE_PREPARING) {
             if (mBottomContainer.getVisibility() == View.VISIBLE) {
-                changeUiToPreparingClear();
+                changeUiShowState(Mode.MODE_PREPARING_CLEAR);
             } else {
-                changeUiToPreparingShow();
+                changeUiShowState(Mode.MODE_PREPARING);
             }
         } else if (mCurrentState == CURRENT_STATE_PLAYING) {
             if (mBottomContainer.getVisibility() == View.VISIBLE) {
-                changeUiToPlayingClear();
+                changeUiShowState(Mode.MODE_PLAYING_CLEAR);
             } else {
-                changeUiToPlayingShow();
+                changeUiShowState(Mode.MODE_PLAYING);
             }
         } else if (mCurrentState == CURRENT_STATE_PAUSE) {
             if (mBottomProgressBar.getVisibility() == View.VISIBLE) {
-                changeUiToPauseClear();
+                changeUiShowState(Mode.MODE_PAUSE_CLEAR);
             } else {
-                changeUiToPauseShow();
+                changeUiShowState(Mode.MODE_PAUSE);
             }
         }  else if (mCurrentState == CURRENT_STATE_AUTO_COMPLETE) {
             if (mBottomContainer.getVisibility() == View.VISIBLE) {
-                changeUiToCompleteClear();
+                changeUiShowState(Mode.MODE_COMPLETE_CLEAR);
             } else {
-                changeUiToCompleteShow();
+                changeUiShowState(Mode.MODE_COMPLETE);
             }
         } else if (mCurrentState == CURRENT_STATE_PLAYING_BUFFERING_START) {
             if (mBottomContainer.getVisibility() == View.VISIBLE) {
-                changeUiToPlayingBufferingClear();
+                changeUiShowState(Mode.MODE_BUFFERING_CLEAR);
             } else {
-                changeUiToPlayingBufferingShow();
+                changeUiShowState(Mode.MODE_BUFFERING);
             }
         }
     }
 
-    private void changeUiToPlayingBufferingShow() {
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
-                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.INVISIBLE,
-                        View.VISIBLE, View.INVISIBLE, View.INVISIBLE);
-                break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.INVISIBLE,
-                        View.VISIBLE, View.INVISIBLE, View.INVISIBLE);
-                break;
-            case SCREEN_WINDOW_TINY:
-                break;
+    private void changeUiShowState(Mode mode) {
+        if (mCurrentScreen == SCREEN_WINDOW_TINY) {
+            return;
         }
-    }
-
-
-    private void changeUiToPlayingBufferingClear() {
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
+        switch (mode) {
+            case MODE_NORMAL:
+                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.VISIBLE,
+                        View.INVISIBLE, View.VISIBLE, View.INVISIBLE);
+                updateStartImage();
+                break;
+            case MODE_BUFFERING:
+                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.INVISIBLE,
+                        View.VISIBLE, View.INVISIBLE, View.INVISIBLE);
+                break;
+            case MODE_BUFFERING_CLEAR:
                 setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
                         View.VISIBLE, View.INVISIBLE, View.VISIBLE);
                 updateStartImage();
                 break;
-            case SCREEN_WINDOW_FULLSCREEN:
+            case MODE_PREPARING:
+                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
+                        View.VISIBLE, View.VISIBLE, View.INVISIBLE);
+                break;
+            case MODE_PREPARING_CLEAR:
+                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
+                        View.VISIBLE, View.VISIBLE, View.INVISIBLE);
+                break;
+            case MODE_PLAYING:
+                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
+                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
+                updateStartImage();
+                break;
+            case MODE_PLAYING_CLEAR:
                 setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-                        View.VISIBLE, View.INVISIBLE, View.VISIBLE);
+                        View.INVISIBLE, View.INVISIBLE, View.VISIBLE);
+                break;
+            case MODE_PAUSE:
+                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
+                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
                 updateStartImage();
                 break;
-            case SCREEN_WINDOW_TINY:
+            case MODE_PAUSE_CLEAR:
+                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
+                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
                 break;
-        }
-    }
-    
-    private void changeUiToCompleteShow() {
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
+            case MODE_COMPLETE:
                 setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
                         View.INVISIBLE, View.VISIBLE, View.INVISIBLE);
                 updateStartImage();
                 break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
-                        View.INVISIBLE, View.VISIBLE, View.INVISIBLE);
-                updateStartImage();
-                break;
-            case SCREEN_WINDOW_TINY:
-                break;
-        }
-    }
-
-    private void changeUiToCompleteClear() {
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
+            case MODE_COMPLETE_CLEAR:
                 setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.VISIBLE,
                         View.INVISIBLE, View.VISIBLE, View.VISIBLE);
                 updateStartImage();
                 break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.VISIBLE,
-                        View.INVISIBLE, View.VISIBLE, View.VISIBLE);
-                updateStartImage();
-                break;
-            case SCREEN_WINDOW_TINY:
-                break;
-        }
-    }
-    
-    private void changeUiToError() {
-        clearCacheImage();
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
+            case MODE_ERROR:
                 setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.VISIBLE,
                         View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
                 updateStartImage();
-                break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.VISIBLE,
-                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
-                updateStartImage();
-                break;
-            case SCREEN_WINDOW_TINY:
                 break;
         }
     }
@@ -291,127 +282,6 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         }
         if (mDismissControlViewTimerTask != null) {
             mDismissControlViewTimerTask.cancel();
-        }
-    }
-
-    private void changeUiToPauseShow() {
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
-                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
-                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
-                updateStartImage();
-                break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
-                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
-                updateStartImage();
-                break;
-            case SCREEN_WINDOW_TINY:
-                break;
-        }
-    }
-
-    private void changeUiToPauseClear() {
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
-                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
-                break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
-                break;
-            case SCREEN_WINDOW_TINY:
-                break;
-        }
-    }
-    
-    private void changeUiToPlayingShow() {
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
-                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
-                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
-                updateStartImage();
-                break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
-                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
-                updateStartImage();
-                break;
-            case SCREEN_WINDOW_TINY:
-                break;
-        }
-    }
-
-
-    private void changeUiToPlayingClear() {
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
-                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-                        View.INVISIBLE, View.INVISIBLE, View.VISIBLE);
-                break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-                        View.INVISIBLE, View.INVISIBLE, View.VISIBLE);
-                break;
-            case SCREEN_WINDOW_TINY:
-                break;
-        }
-    }
-
-    private void changeUiToPreparingShow() {
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
-                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
-                        View.VISIBLE, View.VISIBLE, View.INVISIBLE);
-                break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
-                        View.VISIBLE, View.VISIBLE, View.INVISIBLE);
-                break;
-            case SCREEN_WINDOW_TINY:
-                break;
-        }
-    }
-
-    private void changeUiToPreparingClear() {
-        switch (mCurrentScreen) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
-                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
-                        View.VISIBLE, View.VISIBLE, View.INVISIBLE);
-                break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
-                        View.VISIBLE, View.VISIBLE, View.INVISIBLE);
-                break;
-            case SCREEN_WINDOW_TINY:
-                break;
-        }
-    }
-
-    private void changeUiToNormal() {
-        switch (mCurrentState) {
-            case SCREEN_LAYOUT_NORMAL:
-            case SCREEN_LAYOUT_LIST:
-                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.VISIBLE,
-                        View.INVISIBLE, View.VISIBLE, View.INVISIBLE);
-                updateStartImage();
-                break;
-            case SCREEN_WINDOW_FULLSCREEN:
-                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.VISIBLE,
-                        View.INVISIBLE, View.VISIBLE, View.INVISIBLE);
-                updateStartImage();
-                break;
-            case SCREEN_WINDOW_TINY:
-                break;
-            default:
-                break;
         }
     }
 
@@ -446,6 +316,16 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         mBottomProgressBar.setVisibility(bottomPro);
     }
 
+    private void setProgressDrawable(Drawable drawable) {
+        if (drawable != null) {
+            mProgressBar.setProgressDrawable(drawable);
+        }
+    }
+
+    private void setTitleSize(int size) {
+        mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+    }
+    
     @Override
     public void onClick(View v) {
         super.onClick(v);
@@ -516,6 +396,21 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     }
 
     @Override
+    protected void initAttributeSet(Context context, AttributeSet attrs) {
+        if (attrs == null) {
+            return;
+        }
+        TypedArray attr = context.obtainStyledAttributes(attrs, R.styleable.MxVideoPlayer);
+        Drawable drawable = attr.getDrawable(R.styleable.MxVideoPlayer_progress_drawable);
+        setProgressDrawable(drawable);
+        int defaultTextSize = context.getResources().getDimensionPixelSize(R.dimen.mx_title_textSize);
+        int size = attr.getDimensionPixelSize(R.styleable.MxVideoPlayer_title_size, defaultTextSize);
+        setTitleSize(size);
+        attr.getBoolean(R.styleable.MxVideoPlayer_showBottomProgress, true);
+        attr.recycle();
+    }
+
+    @Override
     protected void showWifiDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage(getResources().getString(R.string.tips_not_wifi));
@@ -582,15 +477,14 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
             mVolumeDialog.getWindow().addFlags(16);
             mVolumeDialog.getWindow().setLayout(-2, -2);
             WindowManager.LayoutParams localLayoutParams = mVolumeDialog.getWindow().getAttributes();
-            localLayoutParams.gravity = 19;
-            localLayoutParams.x = getContext().getResources()
-                    .getDimensionPixelOffset(R.dimen.mx_volume_dialog_margin_left);
+            localLayoutParams.gravity = 49;
+            localLayoutParams.y = getContext().getResources()
+                    .getDimensionPixelOffset(R.dimen.mx_volume_dialog_margin_top);
             mVolumeDialog.getWindow().setAttributes(localLayoutParams);
         }
         if (!mVolumeDialog.isShowing()) {
             mVolumeDialog.show();
         }
-
         mDialogVolumeProgressBar.setProgress(volumePercent);
     }
 

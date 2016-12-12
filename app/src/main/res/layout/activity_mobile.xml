@@ -2,12 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <hb.xvideoplayer.MxVideoPlayerWidget
         android:id="@+id/mpw_video_player"
         android:layout_width="match_parent"
-        android:layout_height="210dp" />
+        android:layout_height="210dp"
+        app:showBottomProgress="false"/>
     
     <Button
         android:id="@+id/button_list"
@@ -24,6 +26,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Auto tiny window"
+        android:textColor="@android:color/black"
+        android:textAllCaps="false"
+        android:layout_margin="8dp"
+        android:textSize="16sp"/>
+
+    <Button
+        android:id="@+id/button_auto_fullscreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Auto fullscreen"
         android:textColor="@android:color/black"
         android:textAllCaps="false"
         android:layout_margin="8dp"
