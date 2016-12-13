@@ -53,4 +53,5 @@
     <dimen name="tv_dialog_tv_textSize">22sp</dimen>
     <dimen name="tv_volume_dialog_iv_width">35dp</dimen>
     <dimen name="tv_volume_dialog_iv_height">35dp</dimen>
+    <dimen name="mx_tv_time_textSize">18sp</dimen>
 </resources>

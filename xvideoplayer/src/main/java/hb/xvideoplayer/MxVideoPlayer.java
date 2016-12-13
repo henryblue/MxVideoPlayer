@@ -101,7 +101,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     protected int mScreenWidth;
     protected int mScreenHeight;
     public AudioManager mAudioManager;
-    private Handler mHandler;
+    protected Handler mHandler;
     private boolean mTextureSizeChanged;
 
     protected float mDownX;
@@ -213,8 +213,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                 return;
             }
             if (mCurrentState == CURRENT_STATE_NORMAL || mCurrentState == CURRENT_STATE_ERROR) {
-                if (!mPlayUrl.startsWith("file") && !MxUtils.isWifiConnected(getContext()) && !WIFI_TIP_DIALOG_SHOWED) {
-                    showWifiDialog();
+                if (isShowNetworkStateDialog()) {
                     return;
                 }
                 preparePlayVideo();
@@ -1013,7 +1012,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     protected abstract void initAttributeSet(Context context, AttributeSet attrs);
 
-    protected abstract void showWifiDialog();
+    protected abstract boolean isShowNetworkStateDialog();
 
     protected abstract void showProgressDialog(float deltaX, String seekTime,
                                                int seekTimePosition, String totalTime, int totalTimeDuration);

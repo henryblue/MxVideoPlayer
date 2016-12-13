@@ -47,6 +47,13 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
 
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
 
+    private Runnable mDismissVolumeCallback = new Runnable() {
+        @Override
+        public void run() {
+            dismissVolumeDialog();
+        }
+    };
+
     public MxTvPlayerWidget(Context context) {
         super(context);
     }
@@ -125,7 +132,8 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
                 break;
             case KeyEvent.KEYCODE_VOLUME_UP:
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                dismissVolumeDialog();
+                mHandler.removeCallbacks(mDismissVolumeCallback);
+                mHandler.postDelayed(mDismissVolumeCallback, 2000);
                 break;
             default:
                 onClickUiToggle();
@@ -235,59 +243,50 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     private void onClickUiToggle() {
         if (mCurrentState == CURRENT_STATE_PREPARING) {
             if (mBottomContainer.getVisibility() == View.VISIBLE) {
-                changeUiToPreparingClear();
+                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
+                        View.VISIBLE, View.VISIBLE, View.INVISIBLE);
             } else {
-                changeUiToPreparingShow();
+                setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
+                        View.VISIBLE, View.VISIBLE, View.INVISIBLE);
             }
         } else if (mCurrentState == CURRENT_STATE_PLAYING) {
             if (mBottomContainer.getVisibility() == View.VISIBLE) {
-                changeUiToPlayingClear();
+                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
+                        View.INVISIBLE, View.INVISIBLE, View.VISIBLE);
             } else {
-                changeUiToPlayingShow();
+                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
+                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
+                updateStartImage();
             }
         } else if (mCurrentState == CURRENT_STATE_PAUSE) {
             if (mBottomProgressBar.getVisibility() == View.VISIBLE) {
-                changeUiToPauseClear();
+                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
+                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
             } else {
-                changeUiToPauseShow();
+                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
+                        View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
+                updateStartImage();
             }
-        } else if (mCurrentState == CURRENT_STATE_AUTO_COMPLETE) {
+        }  else if (mCurrentState == CURRENT_STATE_AUTO_COMPLETE) {
             if (mBottomContainer.getVisibility() == View.VISIBLE) {
-                changeUiToCompleteClear();
+                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.VISIBLE,
+                        View.INVISIBLE, View.VISIBLE, View.VISIBLE);
+                updateStartImage();
             } else {
-                changeUiToCompleteShow();
+                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
+                        View.INVISIBLE, View.VISIBLE, View.INVISIBLE);
+                updateStartImage();
             }
         } else if (mCurrentState == CURRENT_STATE_PLAYING_BUFFERING_START) {
             if (mBottomContainer.getVisibility() == View.VISIBLE) {
-                changeUiToPlayingBufferingClear();
+                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
+                        View.VISIBLE, View.INVISIBLE, View.VISIBLE);
+                updateStartImage();
             } else {
-                changeUiToPlayingBufferingShow();
+                setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.INVISIBLE,
+                        View.VISIBLE, View.INVISIBLE, View.INVISIBLE);
             }
         }
-    }
-
-    private void changeUiToPlayingBufferingShow() {
-        setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.INVISIBLE,
-                View.VISIBLE, View.INVISIBLE, View.INVISIBLE);
-    }
-
-
-    private void changeUiToPlayingBufferingClear() {
-        setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-                View.VISIBLE, View.INVISIBLE, View.VISIBLE);
-        updateStartImage();
-    }
-
-    private void changeUiToCompleteShow() {
-        setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
-                View.INVISIBLE, View.VISIBLE, View.INVISIBLE);
-        updateStartImage();
-    }
-
-    private void changeUiToCompleteClear() {
-        setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.VISIBLE,
-                View.INVISIBLE, View.VISIBLE, View.VISIBLE);
-        updateStartImage();
     }
 
     private void cancelDismissControlViewTimer() {
@@ -297,42 +296,6 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
         if (mDismissControlViewTimerTask != null) {
             mDismissControlViewTimerTask.cancel();
         }
-    }
-
-    private void changeUiToPauseShow() {
-        setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
-                View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
-        updateStartImage();
-
-    }
-
-    private void changeUiToPauseClear() {
-
-        setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-                View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
-
-    }
-
-    private void changeUiToPlayingShow() {
-        setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
-                View.INVISIBLE, View.INVISIBLE, View.INVISIBLE);
-        updateStartImage();
-    }
-
-
-    private void changeUiToPlayingClear() {
-        setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-                View.INVISIBLE, View.INVISIBLE, View.VISIBLE);
-    }
-
-    private void changeUiToPreparingShow() {
-        setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
-                View.VISIBLE, View.VISIBLE, View.INVISIBLE);
-    }
-
-    private void changeUiToPreparingClear() {
-        setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
-                View.VISIBLE, View.VISIBLE, View.INVISIBLE);
     }
 
     private void startDismissControlViewTimer() {
@@ -384,22 +347,22 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
 
     @Override
     protected void initAttributeSet(Context context, AttributeSet attrs) {
-
     }
 
     @Override
-    protected void showWifiDialog() {
+    protected boolean isShowNetworkStateDialog() {
+        if (!mPlayUrl.startsWith("file") && !MxUtils.isNetworkConnected(getContext())) {
+            showNetworkTipDialog();
+            return true;
+        }
+        return false;
+    }
+
+    private void showNetworkTipDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage(getResources().getString(R.string.tips_not_wifi));
-        builder.setPositiveButton(getResources().getString(R.string.tips_not_wifi_confirm), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                preparePlayVideo();
-                WIFI_TIP_DIALOG_SHOWED = true;
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.tips_not_wifi_cancel), new DialogInterface.OnClickListener() {
+        builder.setMessage(getResources().getString(R.string.tips_not_net));
+        builder.setPositiveButton(getResources().getString(R.string.tips_not_network_ok),
+                new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
