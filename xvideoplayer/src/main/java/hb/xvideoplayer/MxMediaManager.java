@@ -28,7 +28,6 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
 
     private static MxMediaManager mxMediaManager;
     private IjkMediaPlayer mMediaPlayer;
-    private HandlerThread mMediaHandlerThread;
     private MediaHandler mMediaHandler;
     private Handler mainThreadHandler;
     public static MxTextureView mTextureView;
@@ -42,7 +41,7 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
 
     private MxMediaManager() {
         mMediaPlayer = new IjkMediaPlayer();
-        mMediaHandlerThread = new HandlerThread(TAG);
+        HandlerThread mMediaHandlerThread = new HandlerThread(TAG);
         mMediaHandlerThread.start();
         mMediaHandler = new MediaHandler(mMediaHandlerThread.getLooper());
         mainThreadHandler = new Handler();

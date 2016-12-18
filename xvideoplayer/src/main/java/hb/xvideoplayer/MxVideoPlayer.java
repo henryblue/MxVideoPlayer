@@ -1,6 +1,7 @@
 package hb.xvideoplayer;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -106,10 +107,12 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     protected float mDownX;
     protected float mDownY;
+    protected boolean mChangeLight;
     protected boolean mChangeVolume;
     protected boolean mChangePosition;
     protected int mDownPosition;
     protected int mGestureDownVolume;
+    protected int mGestureDownBrightness;
     protected int mSeekTimePosition;
 
     protected boolean mTouchingProgressBar = false;
@@ -262,6 +265,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                     mTouchingProgressBar = true;
                     mDownX = x;
                     mDownY = y;
+                    mChangeLight = false;
                     mChangeVolume = false;
                     mChangePosition = false;
                     break;
@@ -272,7 +276,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                     float absDeltaX = Math.abs(deltaX);
                     float absDeltaY = Math.abs(deltaY);
                     if (mCurrentScreen == SCREEN_WINDOW_FULLSCREEN) {
-                        if (!mChangePosition && !mChangeVolume) {
+                        if (!mChangePosition && !mChangeVolume && !mChangeLight) {
                             if (absDeltaX > THRESHOLD || absDeltaY > THRESHOLD) {
                                 cancelProgressTimer();
                                 if (absDeltaX >= THRESHOLD) { // adjust progress
@@ -280,10 +284,15 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                                         mChangePosition = true;
                                         mDownPosition = getCurrentPositionWhenPlaying();
                                     }
-                                } else {  // adjust the volume
-                                    mChangeVolume = true;
-                                    mGestureDownVolume = mAudioManager.
-                                            getStreamVolume(AudioManager.STREAM_MUSIC);
+                                } else {
+                                    if (x <= MxMediaManager.mTextureView.getWidth() / 2) {  // adjust the volume
+                                        mChangeVolume = true;
+                                        mGestureDownVolume = mAudioManager.
+                                                getStreamVolume(AudioManager.STREAM_MUSIC);
+                                    } else {  // adjust the light
+                                        mChangeLight = true;
+                                        mGestureDownBrightness = MxUtils.getScreenBrightness((Activity) getContext());
+                                    }
                                 }
                             }
                         }
@@ -306,12 +315,24 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                         int volumePercent = (int) (mGestureDownVolume * 100 / maxVolume + deltaY * 3 * 100 / mScreenHeight);
                         showVolumeDialog(-deltaY, volumePercent);
                     }
+                    if (mChangeLight) {
+                        deltaY = -deltaY;  // up is -, down is +
+                        int deltaV = (int) (255 * deltaY * 3 / mScreenHeight);
+                        MxUtils.setScreenManualMode(getContext());
+                        int brightnessValue = mGestureDownBrightness + deltaV;
+                        if (brightnessValue >= 0 && brightnessValue <= 255) {
+                            MxUtils.setWindowBrightness((Activity) getContext(), brightnessValue);
+                        }
+                        int brightnessPercent = (int) (mGestureDownBrightness + deltaY * 255  * 3 / mScreenHeight);
+                        showBrightnessDialog(-deltaY, brightnessPercent);
+                    }
                     break;
                 case MotionEvent.ACTION_UP:
                     Log.i(TAG, "onTouch: surfaceContainer actionUp [" + this.hashCode() + "] ");
                     mTouchingProgressBar = false;
                     dismissProgressDialog();
                     dismissVolumeDialog();
+                    dismissBrightnessDialog();
                     if (mChangePosition) {
                         onActionEvent(MxUserAction.ON_TOUCH_SCREEN_SEEK_POSITION);
                         MxMediaManager.getInstance().getPlayer().seekTo(mSeekTimePosition);
@@ -321,6 +342,9 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                     }
                     if (mChangeVolume) {
                         onActionEvent(MxUserAction.ON_TOUCH_SCREEN_SEEK_VOLUME);
+                    }
+                    if (mChangeLight) {
+                        onActionEvent(MxUserAction.ON_TOUCH_SCREEN_SEEK_BRIGHTNESS);
                     }
                     startProgressTimer();
                     break;
@@ -1008,6 +1032,8 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         }
     }
 
+    protected abstract void showBrightnessDialog(float v, int brightnessPercent);
+
     protected abstract int getLayoutId();
 
     protected abstract void initAttributeSet(Context context, AttributeSet attrs);
@@ -1020,6 +1046,8 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     protected abstract void showVolumeDialog(float v, int volumePercent);
 
     protected abstract void dismissVolumeDialog();
+
+    protected abstract void dismissBrightnessDialog();
 
     protected abstract void dismissProgressDialog();
 }

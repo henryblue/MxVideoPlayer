@@ -341,6 +341,11 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     }
 
     @Override
+    protected void showBrightnessDialog(float v, int brightnessPercent) {
+
+    }
+
+    @Override
     protected int getLayoutId() {
         return R.layout.mx_video_layout_tv;
     }
@@ -441,6 +446,11 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
         if (mVolumeDialog != null) {
             mVolumeDialog.dismiss();
         }
+    }
+
+    @Override
+    protected void dismissBrightnessDialog() {
+
     }
 
     @Override

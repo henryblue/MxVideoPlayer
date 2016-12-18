@@ -17,7 +17,8 @@ public interface MxUserAction {
     int ON_QUIT_TINYSCREEN = 10;
 
     int ON_TOUCH_SCREEN_SEEK_VOLUME = 11;
-    int ON_TOUCH_SCREEN_SEEK_POSITION = 12;
+    int ON_TOUCH_SCREEN_SEEK_BRIGHTNESS = 12;
+    int ON_TOUCH_SCREEN_SEEK_POSITION = 13;
 
     void onActionEvent(int type, String url, int screen, Object... objects);
 }

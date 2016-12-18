@@ -4,10 +4,12 @@ package hb.xvideoplayer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -38,7 +40,9 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
 
     protected Dialog mProgressDialog;
     protected Dialog mVolumeDialog;
+    protected Dialog mBrightnessDialog;
     protected ProgressBar mDialogVolumeProgressBar;
+    protected ProgressBar mDialogBrightnessProgressBar;
     protected ProgressBar mDialogProgressBar;
     protected TextView mDialogSeekTime;
     protected TextView mDialogTotalTime;
@@ -497,9 +501,39 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     }
 
     @Override
+    protected void showBrightnessDialog(float v, int brightnessPercent) {
+        if (mBrightnessDialog == null) {
+            View localView = View.inflate(getContext(), R.layout.mx_mobile_brightness_dialog, null);
+            mDialogBrightnessProgressBar = ((ProgressBar) localView.findViewById(R.id.brightness_progressbar));
+            mBrightnessDialog = new Dialog(getContext(), R.style.mx_style_dialog_progress);
+            mBrightnessDialog.setContentView(localView);
+            mBrightnessDialog.getWindow().addFlags(8);
+            mBrightnessDialog.getWindow().addFlags(32);
+            mBrightnessDialog.getWindow().addFlags(16);
+            mBrightnessDialog.getWindow().setLayout(-2, -2);
+            WindowManager.LayoutParams localLayoutParams = mBrightnessDialog.getWindow().getAttributes();
+            localLayoutParams.gravity = 49;
+            localLayoutParams.y = getContext().getResources()
+                    .getDimensionPixelOffset(R.dimen.mx_volume_dialog_margin_top);
+            mBrightnessDialog.getWindow().setAttributes(localLayoutParams);
+        }
+        if (!mBrightnessDialog.isShowing()) {
+            mBrightnessDialog.show();
+        }
+        mDialogBrightnessProgressBar.setProgress(brightnessPercent);
+    }
+
+    @Override
     protected void dismissVolumeDialog() {
         if (mVolumeDialog != null) {
             mVolumeDialog.dismiss();
+        }
+    }
+
+    @Override
+    protected void dismissBrightnessDialog() {
+        if (mBrightnessDialog != null) {
+            mBrightnessDialog.dismiss();
         }
     }
 

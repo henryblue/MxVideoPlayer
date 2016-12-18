@@ -2,19 +2,23 @@ package hb.xvideoplayer;
 
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
+import android.view.Window;
+import android.view.WindowManager;
 
 import java.util.Formatter;
 import java.util.Locale;
 
-public class MxUtils {
+class MxUtils {
 
-    public static  String stringForTime(long milliseconds) {
+    static  String stringForTime(long milliseconds) {
         if (milliseconds < 0 || milliseconds >= 24 * 60 * 60 * 1000) {
             return "00:00";
         }
@@ -32,13 +36,13 @@ public class MxUtils {
         }
     }
 
-    public static boolean isWifiConnected(Context context) {
+    static boolean isWifiConnected(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI);
     }
 
-    public static AppCompatActivity getAppComptActivity(Context context) {
+    static AppCompatActivity getAppComptActivity(Context context) {
         if (context == null) {
             return null;
         }
@@ -50,7 +54,7 @@ public class MxUtils {
         return null;
     }
 
-    public static Activity scanForActivity(Context context) {
+    static Activity scanForActivity(Context context) {
         if (context == null) {
             return null;
         }
@@ -62,7 +66,7 @@ public class MxUtils {
         return null;
     }
 
-    public static boolean isNetworkConnected(Context context) {
+    static boolean isNetworkConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.
                 getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -72,13 +76,46 @@ public class MxUtils {
             NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
 
             if (networkInfo != null && networkInfo.length > 0) {
-                for (int i = 0; i < networkInfo.length; i++) {
-                    if (networkInfo[i].getState() == NetworkInfo.State.CONNECTED) {
+                for (NetworkInfo aNetworkInfo : networkInfo) {
+                    if (aNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    static void setScreenManualMode(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        try {
+            int mode = Settings.System.getInt(contentResolver,
+                    Settings.System.SCREEN_BRIGHTNESS_MODE);
+            if (mode == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC) {
+                Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
+                        Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+            }
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static int getScreenBrightness(Activity activity) {
+        int nowBrightnessValue = 0;
+        ContentResolver resolver = activity.getContentResolver();
+        try {
+            nowBrightnessValue = Settings.System.getInt(resolver, Settings.System.SCREEN_BRIGHTNESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return nowBrightnessValue;
+    }
+
+    static void setWindowBrightness(Activity activity, int brightness) {
+        try {
+            Settings.System.putInt(activity.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, brightness);
+        } catch (Exception localException) {
+            localException.printStackTrace();
+        }
     }
 }
