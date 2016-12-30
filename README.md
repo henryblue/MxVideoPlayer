@@ -10,6 +10,9 @@ A simple video player support mobile and TV
 <img src="screenshot3.jpg" width="305" height="465" />
 &nbsp;&nbsp;&nbsp;
 <img src="screenshot4.jpg" width="305" height="465" />
+<br/>
+<br/>
+<img src="Tvscreenshot.png" width="80%" />
 </p>
 
 ##Usage
