@@ -28,8 +28,25 @@ public class TvActivity extends AppCompatActivity {
 
         mVideoPlayerWidget = (MxTvPlayerWidget) findViewById(R.id.mpw_video_player);
         mVideoPlayerWidget.startPlay("http://112.253.22.162/8/l/r/m/u/lrmuartyvcqytunfrqatzthrsrsmnm/" +
-                "hc.yinyuetai.com/A1460152D6652EB21A149B9DF5F7E92E.flv",
+                        "hc.yinyuetai.com/A1460152D6652EB21A149B9DF5F7E92E.flv",
                 "LUV Apink");
+
+        mVideoPlayerWidget.setOnPlayStateListener(new MxTvPlayerWidget.OnPlayStateListener() {
+            @Override
+            public void onPlayPrepared() {
+            }
+
+            @Override
+            public void onPlayBufferingUpdate(int percent) {
+            }
+
+            @Override
+            public void OnPlayCompletion() {
+                mVideoPlayerWidget.autoStartPlay("http://112.253.22.163/4/p/p/q/v/" +
+                        "ppqvlatwcebccqgrthiutjkityurza/hc.yinyuetai.com/59EC014EDDFE31808075899973863AAD.flv",
+                        "B.B.B(Big Baby Baby)");
+            }
+        });
     }
 
 

@@ -4,12 +4,10 @@ package hb.xvideoplayer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -124,6 +122,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
             case CURRENT_STATE_PREPARING:
                 changeUiShowState(Mode.MODE_PREPARING);
                 startDismissControlViewTimer();
+                mBottomProgressBar.setProgress(0);
                 break;
             case CURRENT_STATE_PLAYING:
                 changeUiShowState(Mode.MODE_PLAYING);
@@ -449,8 +448,8 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         if (mProgressDialog == null) {
             View localView = View.inflate(getContext(), R.layout.mx_progress_dialog, null);
             mDialogProgressBar = ((ProgressBar) localView.findViewById(R.id.duration_progressbar));
-            mDialogSeekTime = ((TextView) localView.findViewById(R.id.tv_current));
-            mDialogTotalTime = ((TextView) localView.findViewById(R.id.tv_duration));
+            mDialogSeekTime = ((TextView) localView.findViewById(R.id.video_current));
+            mDialogTotalTime = ((TextView) localView.findViewById(R.id.video_duration));
             mDialogIcon = ((ImageView) localView.findViewById(R.id.duration_image_tip));
             mProgressDialog = new Dialog(getContext(), R.style.mx_style_dialog_progress);
             mProgressDialog.setContentView(localView);

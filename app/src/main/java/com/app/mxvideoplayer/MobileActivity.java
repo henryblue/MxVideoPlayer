@@ -22,6 +22,7 @@ public class MobileActivity extends AppCompatActivity {
         videoPlayerWidget.startPlay("http://112.253.22.162/8/l/r/m/u/lrmuartyvcqytunfrqatzthrsrsmnm/" +
                         "hc.yinyuetai.com/A1460152D6652EB21A149B9DF5F7E92E.flv",
                 MxVideoPlayer.SCREEN_LAYOUT_NORMAL, "LUV Apink");
+
         Button buttonList = (Button) findViewById(R.id.button_list);
         buttonList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +46,8 @@ public class MobileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MxVideoPlayerWidget.startFullscreen(MobileActivity.this, MxVideoPlayerWidget.class,
-                        "http://112.253.22.162/8/l/r/m/u/lrmuartyvcqytunfrqatzthrsrsmnm/hc.yinyuetai.com/A1460152D6652EB21A149B9DF5F7E92E.flv"
+                        "http://112.253.22.162/8/l/r/m/u/lrmuartyvcqytunfrqatzthrsrsmnm/" +
+                                "hc.yinyuetai.com/A1460152D6652EB21A149B9DF5F7E92E.flv"
                 , "LUV Apink");
             }
         });

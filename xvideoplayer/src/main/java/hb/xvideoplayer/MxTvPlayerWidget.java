@@ -24,7 +24,7 @@ import mxvideoplayer.app.com.xvideoplayer.R;
 public class MxTvPlayerWidget extends MxVideoPlayer {
 
     private static final int VOLUME_ITEM = 2;
-    private static final int PROGRESS_ITEM = 25;
+    private static final int PROGRESS_ITEM = 15;
 
     protected static Timer DISMISS_CONTROL_VIEW_TIMER;
 
@@ -44,6 +44,8 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
 
     private int mTvDownPosition = 0;
     private int mTvSeekPosition;
+
+    private OnPlayStateListener mListener;
 
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
 
@@ -80,6 +82,19 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
             return true;
         }
         return false;
+    }
+
+    public boolean autoStartPlay(String url, Object... objects) {
+        if (startPlay(url, objects)) {
+            mStartButton.performClick();
+            return true;
+        }  else {
+            return false;
+        }
+    }
+
+    public void setOnPlayStateListener(OnPlayStateListener listener) {
+        mListener = listener;
     }
 
     public boolean requestKeyDown(int keyCode, KeyEvent event) {
@@ -164,7 +179,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
             count = 1;
         }
         int totalTimeDuration = getDuration();
-        int seekTimePosition = mTvDownPosition + PROGRESS_ITEM * count * totalTimeDuration / mScreenWidth;
+        int seekTimePosition = mTvDownPosition + PROGRESS_ITEM * count * (totalTimeDuration / mScreenWidth);
         if (seekTimePosition > totalTimeDuration) {
             seekTimePosition = totalTimeDuration;
         }
@@ -178,7 +193,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
             count = 1;
         }
         int totalTimeDuration = getDuration();
-        int seekTimePosition = mTvDownPosition - PROGRESS_ITEM * count * totalTimeDuration / mScreenWidth;
+        int seekTimePosition = mTvDownPosition - PROGRESS_ITEM * count * (totalTimeDuration / mScreenWidth);
         if (seekTimePosition < 0) {
             seekTimePosition = 0;
         }
@@ -206,6 +221,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
                 setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
                         View.VISIBLE, View.VISIBLE, View.INVISIBLE);
                 startDismissControlViewTimer();
+                mBottomProgressBar.setProgress(0);
                 break;
             case CURRENT_STATE_PLAYING:
                 setAllControlsVisible(View.VISIBLE, View.VISIBLE, View.VISIBLE,
@@ -380,7 +396,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     protected void showProgressDialog(float deltaX, String seekTime,
                                       int seekTimePosition, String totalTime, int totalTimeDuration) {
         if (mProgressDialog == null) {
-            View localView = View.inflate(getContext(), R.layout.mx_progress_dialog, null);
+            View localView = View.inflate(getContext(), R.layout.mx_tv_progress_dialog, null);
             mDialogProgressBar = ((ProgressBar) localView.findViewById(R.id.duration_progressbar));
             mDialogSeekTime = ((TextView) localView.findViewById(R.id.tv_current));
             mDialogTotalTime = ((TextView) localView.findViewById(R.id.tv_duration));
@@ -460,6 +476,30 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
         }
     }
 
+    @Override
+    public void onPrepared() {
+        super.onPrepared();
+        if (mListener != null) {
+            mListener.onPlayPrepared();
+        }
+    }
+
+    @Override
+    public void onBufferingUpdate(int percent) {
+        super.onBufferingUpdate(percent);
+        if (mListener != null) {
+            mListener.onPlayBufferingUpdate(percent);
+        }
+    }
+
+    @Override
+    public void onAutoCompletion() {
+        super.onAutoCompletion();
+        if (mListener != null) {
+            mListener.OnPlayCompletion();
+        }
+    }
+
     public class DismissControlViewTimerTask extends TimerTask {
 
         @Override
@@ -482,5 +522,11 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
                 }
             }
         }
+    }
+
+    public interface OnPlayStateListener {
+        void onPlayPrepared();
+        void onPlayBufferingUpdate(int percent);
+        void OnPlayCompletion();
     }
 }
