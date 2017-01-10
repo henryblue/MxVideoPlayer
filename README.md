@@ -25,7 +25,7 @@ defaultConfig {
    }
 dependencies {
     ......
-    compile 'com.henryblue.mxvideoplayer:xvideoplayer:0.9.8'
+    compile 'com.henryblue.mxvideoplayer:xvideoplayer:1.0.1'
    }
 
 ```
