@@ -78,7 +78,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     public int mCurrentState = -1;
     public int mCurrentScreen = -1;
 
-    public String mPlayUrl;
+    public String mPlayUrl = "";
     public Object[] mObjects = null;
     public boolean mLooping = false;
     public Map<String, String> mDataMap = new HashMap<>();
