@@ -10,6 +10,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,9 +46,12 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     protected TextView mDialogSeekTime;
     protected TextView mDialogTotalTime;
     protected ImageView mDialogIcon;
+    protected boolean mIsShowBottomProgressBar;
+    private static boolean mIsHideBottomProgressBar = false;
 
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
-    private boolean mIsShowBottomProgressBar;
+
+    private AttributeSet mAttributeSet;
 
     public enum Mode {
         MODE_NORMAL,
@@ -70,6 +74,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
 
     public MxVideoPlayerWidget(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mAttributeSet = attrs;
     }
 
     @Override
@@ -336,6 +341,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
 
     public void setBottomProgressBarVisibility(boolean visibility) {
         mIsShowBottomProgressBar = visibility;
+        mIsHideBottomProgressBar = !visibility;
     }
 
     @Override
@@ -410,6 +416,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     @Override
     protected void initAttributeSet(Context context, AttributeSet attrs) {
         if (attrs == null) {
+            setBottomProgressBarVisibility(!mIsHideBottomProgressBar);
             return;
         }
         TypedArray attr = context.obtainStyledAttributes(attrs, R.styleable.MxVideoPlayer);
@@ -551,6 +558,12 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
+    }
+
+    @Override
+    public void onCompletion() {
+        super.onCompletion();
+        mIsHideBottomProgressBar = mIsShowBottomProgressBar;
     }
 
     public class DismissControlViewTimerTask extends TimerTask {

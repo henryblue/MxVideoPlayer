@@ -73,7 +73,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     public static boolean ACTION_BAR_EXIST = true;
     public static boolean TOOL_BAR_EXIST = true;
     public static int FULLSCREEN_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_SENSOR; //由物理感应器决定显示方向
-    public static int NORMAL_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;  //竖屏
+    public static int NORMAL_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;   //竖屏
 
     public int mCurrentState = -1;
     public int mCurrentScreen = -1;
@@ -384,8 +384,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         }
     }
 
-
-    private void startWindowFullscreen() {
+    public void startWindowFullscreen() {
         obtainCache();
         CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
         hideSupportActionBar(getContext());
