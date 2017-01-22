@@ -6,8 +6,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -46,6 +49,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     private int mTvSeekPosition;
 
     private OnPlayStateListener mListener;
+    private boolean mIsShowBottomProgressBar;
 
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
 
@@ -342,7 +346,11 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
         } else {
             mThumbImageView.setVisibility(View.GONE);
         }
-        mBottomProgressBar.setVisibility(bottomPro);
+        if (mIsShowBottomProgressBar) {
+            mBottomProgressBar.setVisibility(bottomPro);
+        } else {
+            mBottomProgressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -368,6 +376,32 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
 
     @Override
     protected void initAttributeSet(Context context, AttributeSet attrs) {
+        if (attrs == null) {
+            return;
+        }
+        TypedArray attr = context.obtainStyledAttributes(attrs, R.styleable.MxVideoPlayer);
+        Drawable drawable = attr.getDrawable(R.styleable.MxVideoPlayer_progress_drawable);
+        setProgressDrawable(drawable);
+        int defaultTextSize = context.getResources().getDimensionPixelSize(R.dimen.mx_title_textSize);
+        int size = attr.getDimensionPixelSize(R.styleable.MxVideoPlayer_title_size, defaultTextSize);
+        setTitleSize(size);
+        boolean isShowBottomProgressBar = attr.getBoolean(R.styleable.MxVideoPlayer_showBottomProgress, true);
+        setBottomProgressBarVisibility(isShowBottomProgressBar);
+        attr.recycle();
+    }
+
+    private void setProgressDrawable(Drawable drawable) {
+        if (drawable != null) {
+            mProgressBar.setProgressDrawable(drawable);
+        }
+    }
+
+    private void setTitleSize(int size) {
+        mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+    }
+
+    public void setBottomProgressBarVisibility(boolean visibility) {
+        mIsShowBottomProgressBar = visibility;
     }
 
     @Override
@@ -514,7 +548,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
                             mBottomContainer.setVisibility(View.INVISIBLE);
                             mTopContainer.setVisibility(View.INVISIBLE);
                             mStartButton.setVisibility(View.INVISIBLE);
-                            if (mCurrentScreen != SCREEN_WINDOW_TINY) {
+                            if (mIsShowBottomProgressBar) {
                                 mBottomProgressBar.setVisibility(View.VISIBLE);
                             }
                         }

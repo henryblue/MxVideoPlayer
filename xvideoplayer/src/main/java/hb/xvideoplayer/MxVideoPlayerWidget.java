@@ -47,6 +47,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     protected ImageView mDialogIcon;
 
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
+    private boolean mIsShowBottomProgressBar;
 
     public enum Mode {
         MODE_NORMAL,
@@ -316,7 +317,11 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         } else {
             mThumbImageView.setVisibility(View.GONE);
         }
-        mBottomProgressBar.setVisibility(bottomPro);
+        if (mIsShowBottomProgressBar) {
+            mBottomProgressBar.setVisibility(bottomPro);
+        } else {
+            mBottomProgressBar.setVisibility(View.GONE);
+        }
     }
 
     private void setProgressDrawable(Drawable drawable) {
@@ -328,7 +333,11 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     private void setTitleSize(int size) {
         mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
     }
-    
+
+    public void setBottomProgressBarVisibility(boolean visibility) {
+        mIsShowBottomProgressBar = visibility;
+    }
+
     @Override
     public void onClick(View v) {
         super.onClick(v);
@@ -409,7 +418,8 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         int defaultTextSize = context.getResources().getDimensionPixelSize(R.dimen.mx_title_textSize);
         int size = attr.getDimensionPixelSize(R.styleable.MxVideoPlayer_title_size, defaultTextSize);
         setTitleSize(size);
-        attr.getBoolean(R.styleable.MxVideoPlayer_showBottomProgress, true);
+        boolean isShowBottomProgressBar = attr.getBoolean(R.styleable.MxVideoPlayer_showBottomProgress, true);
+        setBottomProgressBarVisibility(isShowBottomProgressBar);
         attr.recycle();
     }
 
@@ -557,7 +567,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
                             mBottomContainer.setVisibility(View.INVISIBLE);
                             mTopContainer.setVisibility(View.INVISIBLE);
                             mStartButton.setVisibility(View.INVISIBLE);
-                            if (mCurrentScreen != SCREEN_WINDOW_TINY) {
+                            if (mCurrentScreen != SCREEN_WINDOW_TINY && mIsShowBottomProgressBar) {
                                 mBottomProgressBar.setVisibility(View.VISIBLE);
                             }
                         }
