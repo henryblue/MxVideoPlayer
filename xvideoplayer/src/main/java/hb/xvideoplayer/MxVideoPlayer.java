@@ -447,7 +447,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     public static boolean backPress() {
         MxMediaPlayerListener listener = getFirst();
-        return (listener != null && listener.backToOtherListener());
+        return (listener != null && listener.quitFullscreenOrTinyListener());
     }
 
     public void setUiStateAndScreen(int state) {
@@ -799,9 +799,9 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     }
 
     @Override
-    public boolean backToOtherListener() {
+    public boolean quitFullscreenOrTinyListener() {
         obtainCache();
-        Log.i(TAG, "backToOtherListener: [" + this.hashCode() + "] ");
+        Log.i(TAG, "quitFullscreenOrTinyListener: [" + this.hashCode() + "] ");
         MxUtils.getAppComptActivity(getContext()).setRequestedOrientation(NORMAL_ORIENTATION);
         if (mCurrentScreen == SCREEN_WINDOW_FULLSCREEN
                 || mCurrentScreen == SCREEN_WINDOW_TINY) {

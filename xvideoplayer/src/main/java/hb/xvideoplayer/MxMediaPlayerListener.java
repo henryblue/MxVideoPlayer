@@ -17,7 +17,7 @@ public interface MxMediaPlayerListener {
 
     void goBackThisListener();
 
-    boolean backToOtherListener();
+    boolean quitFullscreenOrTinyListener();
 
     void onScrollChange();
 
