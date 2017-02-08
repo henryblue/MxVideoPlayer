@@ -1,5 +1,6 @@
 # MxVideoPlayer
-A simple video player support mobile and TV
+A simple video player support mobile and TV. Video playback base on [ijkplayer](https://github.com/Bilibili/ijkplayer). The player supports more video formats by default.
+
 ##ScreenShot
 <p>
 <img src="screenshot1.jpg" width="305" height="465" />
