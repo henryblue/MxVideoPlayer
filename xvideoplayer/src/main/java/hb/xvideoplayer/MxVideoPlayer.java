@@ -888,6 +888,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void onAutoCompletion() {
+        Runtime.getRuntime().gc();  // avoid memory increment when recycler play
         Log.i(TAG, "onAutoCompletion " + " [" + this.hashCode() + "] " + MxVideoPlayerManager.mListenerList.size());
         onActionEvent(MxUserAction.ON_AUTO_COMPLETE);
         dismissVolumeDialog();
