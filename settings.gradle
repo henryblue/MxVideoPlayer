@@ -1,1 +1,1 @@
-include ':app', ':xvideoplayer', ':ijkplayer-java'
+include ':app', ':xvideoplayer'
