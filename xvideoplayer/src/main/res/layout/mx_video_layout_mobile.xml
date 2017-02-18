@@ -116,6 +116,7 @@
         android:layout_marginLeft="@dimen/mx_tiny_marginLeft"
         android:layout_marginTop="@dimen/mx_tiny_marginTop"
         android:scaleType="centerInside"
+        android:visibility="gone"
         android:background="@drawable/mx_click_quit_tiny_selector"/>
 
     <ProgressBar
