@@ -219,7 +219,11 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                 if (isShowNetworkStateDialog()) {
                     return;
                 }
-                preparePlayVideo();
+                if (mCurrentScreen == SCREEN_WINDOW_FULLSCREEN) {
+                    preparePlayVideoInFullscreen();
+                } else {
+                    preparePlayVideo();
+                }
                 onActionEvent(mCurrentState != CURRENT_STATE_ERROR ? MxUserAction.ON_CLICK_START_ICON
                         : MxUserAction.ON_CLICK_START_ERROR);
             } else if (mCurrentState == CURRENT_STATE_PLAYING) {
@@ -651,6 +655,22 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         MxMediaManager.getInstance().prepare(mPlayUrl, mDataMap, mLooping);
         setUiStateAndScreen(CURRENT_STATE_PREPARING);
     }
+
+    protected void preparePlayVideoInFullscreen() {
+        Log.i(TAG, "prepare play video in fullscreen [" + this.hashCode() + "] ");
+
+        MxVideoPlayerManager.putListener(this);
+
+        mAudioManager.requestAudioFocus(mOnAudioFocusChangeListener,
+                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+        // 禁止系统休眠
+        MxUtils.scanForActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        MxVideoPlayerManager.putScrollListener(this);
+        MxMediaManager.getInstance().prepare(mPlayUrl, mDataMap, mLooping);
+        setUiStateAndScreen(CURRENT_STATE_PREPARING);
+    }
+
 
     private void addTextureView() {
         Log.i(TAG, "addTextureView [" + this.hashCode() + "]");
