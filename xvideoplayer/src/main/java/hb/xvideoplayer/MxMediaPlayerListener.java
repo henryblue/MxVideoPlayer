@@ -15,7 +15,7 @@ public interface MxMediaPlayerListener {
 
     void onVideoSizeChanged();
 
-    void goBackThisListener();
+    void goBackNormalListener();
 
     boolean quitFullscreenOrTinyListener();
 

@@ -104,6 +104,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     public AudioManager mAudioManager;
     protected Handler mHandler;
     private boolean mTextureSizeChanged;
+    private boolean mIsTryPlayOnError = false;
 
     protected float mDownX;
     protected float mDownY;
@@ -219,11 +220,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                 if (isShowNetworkStateDialog()) {
                     return;
                 }
-                if (mCurrentScreen == SCREEN_WINDOW_FULLSCREEN) {
-                    preparePlayVideoInFullscreen();
-                } else {
-                    preparePlayVideo();
-                }
+                preparePlayVideo();
                 onActionEvent(mCurrentState != CURRENT_STATE_ERROR ? MxUserAction.ON_CLICK_START_ICON
                         : MxUserAction.ON_CLICK_START_ERROR);
             } else if (mCurrentState == CURRENT_STATE_PLAYING) {
@@ -253,6 +250,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                 startWindowFullscreen();
             }
         } else if (id == R.id.mx_surface_container && mCurrentState == CURRENT_STATE_ERROR) {
+            Log.i(TAG, "onClick: click surfaceContainer and currentState=" + mCurrentState);
             preparePlayVideo();
         }
     }
@@ -642,6 +640,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     protected void preparePlayVideo() {
         Log.i(TAG, "prepare play video [" + this.hashCode() + "] ");
+        mIsTryPlayOnError = mCurrentState == CURRENT_STATE_ERROR;
         MxVideoPlayerManager.completeAll();
         MxVideoPlayerManager.putListener(this);
         addTextureView();
@@ -655,22 +654,6 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         MxMediaManager.getInstance().prepare(mPlayUrl, mDataMap, mLooping);
         setUiStateAndScreen(CURRENT_STATE_PREPARING);
     }
-
-    protected void preparePlayVideoInFullscreen() {
-        Log.i(TAG, "prepare play video in fullscreen [" + this.hashCode() + "] ");
-
-        MxVideoPlayerManager.putListener(this);
-
-        mAudioManager.requestAudioFocus(mOnAudioFocusChangeListener,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
-        // 禁止系统休眠
-        MxUtils.scanForActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        MxVideoPlayerManager.putScrollListener(this);
-        MxMediaManager.getInstance().prepare(mPlayUrl, mDataMap, mLooping);
-        setUiStateAndScreen(CURRENT_STATE_PREPARING);
-    }
-
 
     private void addTextureView() {
         Log.i(TAG, "addTextureView [" + this.hashCode() + "]");
@@ -754,7 +737,10 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
         mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
         MxUtils.scanForActivity(getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        clearFullscreenLayout();
+        if ((!mIsTryPlayOnError && mCurrentScreen == SCREEN_WINDOW_FULLSCREEN) ||
+                mCurrentScreen == SCREEN_WINDOW_TINY) {
+            clearFullscreenLayout();
+        }
         MxUtils.getAppComptActivity(getContext()).setRequestedOrientation(NORMAL_ORIENTATION);
         clearCacheImage();
     }
@@ -809,8 +795,8 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     }
 
     @Override
-    public void goBackThisListener() {
-        Log.i(TAG, "goBackThisListener: [" + this.hashCode() + "] ");
+    public void goBackNormalListener() {
+        Log.i(TAG, "goBackNormalListener: [" + this.hashCode() + "] ");
         mCurrentState = MxMediaManager.getInstance().mLastState;
         setUiStateAndScreen(mCurrentState);
         addTextureView();
@@ -820,8 +806,9 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public boolean quitFullscreenOrTinyListener() {
-        obtainCache();
         Log.i(TAG, "quitFullscreenOrTinyListener: [" + this.hashCode() + "] ");
+        mIsTryPlayOnError = false;
+        obtainCache();
         MxUtils.getAppComptActivity(getContext()).setRequestedOrientation(NORMAL_ORIENTATION);
         if (mCurrentScreen == SCREEN_WINDOW_FULLSCREEN
                 || mCurrentScreen == SCREEN_WINDOW_TINY) {
@@ -843,7 +830,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
             MxVideoPlayerManager.popListener();
             MxMediaPlayerListener firstListener = MxVideoPlayerManager.getFirst();
             if (firstListener != null) {
-                firstListener.goBackThisListener();
+                firstListener.goBackNormalListener();
                 CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
                 refreshCache();
             } else {
@@ -908,13 +895,14 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
 
     @Override
     public void onAutoCompletion() {
+        Log.i(TAG, "onAutoCompletion " + " [" + this.hashCode() + "] " + "===current listener size=" +
+                MxVideoPlayerManager.mListenerList.size());
+        mIsTryPlayOnError = false;
         Runtime.getRuntime().gc();  // avoid memory increment when recycler play
-        Log.i(TAG, "onAutoCompletion " + " [" + this.hashCode() + "] " + MxVideoPlayerManager.mListenerList.size());
         onActionEvent(MxUserAction.ON_AUTO_COMPLETE);
         dismissVolumeDialog();
         dismissProgressDialog();
         setUiStateAndScreen(CURRENT_STATE_AUTO_COMPLETE);
-        MxVideoPlayerManager.popListener();
         MxVideoPlayerManager.completeAll();
     }
 
