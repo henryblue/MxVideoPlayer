@@ -8,8 +8,7 @@ import android.util.Log;
 import android.view.TextureView;
 
 /**
- * NOTE: Can not fullscreen RelativeLayout, to nest a LinearLayout
- * 在RelativeLayout中无法全屏, 需要在外面嵌套LinearLayout
+ * NOTE: Can not fullscreen RelativeLayout, need to nest a LinearLayout
  */
 public class MxTextureView extends TextureView {
     protected static final String TAG = "MxTextureView";
@@ -80,7 +79,7 @@ public class MxTextureView extends TextureView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int viewRotation = (int) getRotation();
-        // 如果旋转成立, 交换宽高参数
+        // If rotate, swap the width and height parameters
         if (viewRotation == 90 || viewRotation == 270) {
             int tmpMeasureSpec = widthMeasureSpec;
             widthMeasureSpec = heightMeasureSpec;

@@ -90,7 +90,7 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getCurrentListener();
                 if (listener != null) {
                     listener.onPrepared();
                 }
@@ -103,7 +103,7 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getCurrentListener();
                 if (listener != null) {
                     listener.onBufferingUpdate(percent);
                 }
@@ -116,7 +116,7 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getCurrentListener();
                 if (listener != null) {
                     listener.onAutoCompletion();
                 }
@@ -129,7 +129,7 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getCurrentListener();
                 if (listener != null) {
                     listener.onError(what, extra);
                 }
@@ -143,7 +143,7 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getCurrentListener();
                 if (listener != null) {
                     listener.onInfo(what, extra);
                 }
@@ -157,7 +157,7 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getCurrentListener();
                 if (listener != null) {
                     listener.onSeekComplete();
                 }
@@ -172,7 +172,7 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                MxMediaPlayerListener listener = MxVideoPlayerManager.getFirst();
+                MxMediaPlayerListener listener = MxVideoPlayerManager.getCurrentListener();
                 if (listener != null) {
                     listener.onVideoSizeChanged();
                 }

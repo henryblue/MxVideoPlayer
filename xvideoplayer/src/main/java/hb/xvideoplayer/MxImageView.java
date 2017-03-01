@@ -7,8 +7,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 /**
- * 注意RelativeLayout中无法全屏，要嵌套一个LinearLayout
- * NOTE! Can not fullscreen RelativeLayout, to nest a LinearLayout
+ * NOTE! Can not fullscreen RelativeLayout, need to nest a LinearLayout
  * onMeasure与MxTextureView里的相同, 参考VideoView中的onMeasure
  */
 public class MxImageView extends ImageView {
@@ -48,7 +47,7 @@ public class MxImageView extends ImageView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int viewRotation = (int) getRotation();
-        // 如果旋转, 交换宽高参数。
+        // If rotate, swap the width and height parameters
         if (viewRotation == 90 || viewRotation == 270) {
             int tempMeasureSpec = widthMeasureSpec;
             widthMeasureSpec = heightMeasureSpec;

@@ -64,7 +64,7 @@ public class MxVideoPlayerManager {
         return mListenerList.pop().get();
     }
 
-    public static MxMediaPlayerListener getFirst() {
+    public static MxMediaPlayerListener getCurrentListener() {
         if (mListenerList.size() <= 0) {
             return null;
         }

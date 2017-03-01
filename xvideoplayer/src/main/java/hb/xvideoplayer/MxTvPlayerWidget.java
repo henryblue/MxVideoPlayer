@@ -90,7 +90,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
 
     public boolean autoStartPlay(String url, Object... objects) {
         if (startPlay(url, objects)) {
-            mStartButton.performClick();
+            mPlayControllerButton.performClick();
             return true;
         }  else {
             return false;
@@ -141,7 +141,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     public boolean requestKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_ENTER:
-                mStartButton.performClick();
+                mPlayControllerButton.performClick();
                 break;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
             case KeyEvent.KEYCODE_DPAD_LEFT:
@@ -213,8 +213,8 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     }
 
     @Override
-    public void setUiStateAndScreen(int state) {
-        super.setUiStateAndScreen(state);
+    public void setUiPlayState(int state) {
+        super.setUiPlayState(state);
         switch (mCurrentState) {
             case CURRENT_STATE_NORMAL:
                 setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.VISIBLE,
@@ -327,11 +327,11 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
 
     private void updateStartImage() {
         if (mCurrentState == CURRENT_STATE_PLAYING) {
-            mStartButton.setImageResource(R.drawable.mx_click_pause_selector);
+            mPlayControllerButton.setImageResource(R.drawable.mx_click_pause_selector);
         } else if (mCurrentState == CURRENT_STATE_ERROR) {
-            mStartButton.setImageResource(R.drawable.mx_click_error_selector);
+            mPlayControllerButton.setImageResource(R.drawable.mx_click_error_selector);
         } else {
-            mStartButton.setImageResource(R.drawable.mx_click_play_selector);
+            mPlayControllerButton.setImageResource(R.drawable.mx_click_play_selector);
         }
     }
 
@@ -339,7 +339,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
                                       int thumbImg, int bottomPro) {
         mTopContainer.setVisibility(topCon);
         mBottomContainer.setVisibility(bottomCon);
-        mStartButton.setVisibility(startBtn);
+        mPlayControllerButton.setVisibility(startBtn);
         mLoadingProgressBar.setVisibility(loadingPro);
         if (thumbImg == View.VISIBLE) {
             mThumbImageView.setVisibility(thumbImg);
@@ -547,7 +547,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
                         public void run() {
                             mBottomContainer.setVisibility(View.INVISIBLE);
                             mTopContainer.setVisibility(View.INVISIBLE);
-                            mStartButton.setVisibility(View.INVISIBLE);
+                            mPlayControllerButton.setVisibility(View.INVISIBLE);
                             if (mIsShowBottomProgressBar) {
                                 mBottomProgressBar.setVisibility(View.VISIBLE);
                             }
