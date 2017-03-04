@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="@dimen/tv_progress_dialog_width"
     android:layout_height="wrap_content"
     android:background="@drawable/mx_dialog_progress_bg" >
 
-    <LinearLayout
-        android:layout_width="@dimen/tv_progress_dialog_width"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/duration_image_tip"
             android:layout_width="@dimen/mobile_dialog_image_tip_width"
             android:layout_height="@dimen/mobile_dialog_image_tip_height"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/mobile_dialog_image_marginTop" />
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/mobile_dialog_image_marginTop"
+            android:contentDescription="@string/mx_img_content_dec" />
 
         <LinearLayout
+            android:id="@+id/duration_ll_time_tip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_below="@id/duration_image_tip"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/mobile_dialog_ll_tv_marginTop"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
@@ -44,12 +43,13 @@
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="@dimen/mobile_dialog_progress_height"
-            android:layout_gravity="center_horizontal"
+            android:layout_below="@id/duration_ll_time_tip"
+            android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/mobile_dialog_progress_marginBottom"
             android:layout_marginLeft="@dimen/mobile_dialog_progress_marginLeft"
             android:layout_marginRight="@dimen/mobile_dialog_progress_marginRight"
             android:layout_marginTop="@dimen/mobile_dialog_progress_marginTop"
             android:max="100"
             android:progressDrawable="@drawable/mx_dialog_progress" />
-    </LinearLayout>
+
 </RelativeLayout>

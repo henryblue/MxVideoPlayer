@@ -20,7 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/black"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/mx_img_content_dec" />
 
     <LinearLayout
         android:id="@+id/mx_layout_top"
@@ -36,7 +37,8 @@
             android:layout_height="@dimen/mx_iv_back_height"
             android:paddingLeft="@dimen/mx_iv_back_paddingLeft"
             android:scaleType="centerInside"
-            android:src="@drawable/mx_back"/>
+            android:src="@drawable/mx_back"
+            android:contentDescription="@string/mx_img_content_dec" />
 
         <TextView
             android:id="@+id/mx_title"
@@ -97,7 +99,8 @@
             android:layout_height="match_parent"
             android:paddingRight="@dimen/mx_fullscreen_paddingRight"
             android:scaleType="center"
-            android:src="@drawable/mx_enlarge"/>
+            android:src="@drawable/mx_enlarge"
+            android:contentDescription="@string/mx_img_content_dec" />
     </LinearLayout>
 
     <ProgressBar
@@ -117,7 +120,8 @@
         android:layout_marginTop="@dimen/mx_tiny_marginTop"
         android:scaleType="centerInside"
         android:visibility="gone"
-        android:background="@drawable/mx_click_quit_tiny_selector"/>
+        android:background="@drawable/mx_click_quit_tiny_selector"
+        android:contentDescription="@string/mx_img_content_dec" />
 
     <ProgressBar
         android:id="@+id/mx_loading"
@@ -134,5 +138,6 @@
         android:layout_height="@dimen/mx_start_btn_height"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/mx_click_play_selector"/>
+        android:src="@drawable/mx_click_play_selector"
+        android:contentDescription="@string/mx_img_content_dec" />
 </RelativeLayout>

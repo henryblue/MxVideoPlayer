@@ -7,4 +7,5 @@
     <string name="tips_not_wifi_cancel">Stop play</string>
     <string name="no_url">No Play Url</string>
     <string name="default_time_text">00:00</string>
+    <string name="mx_img_content_dec">mx_img_content_dec</string>
 </resources>

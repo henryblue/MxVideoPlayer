@@ -437,10 +437,12 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
             mDialogIcon = ((ImageView) localView.findViewById(R.id.duration_image_tip));
             mProgressDialog = new Dialog(getContext(), R.style.mx_style_dialog_progress);
             mProgressDialog.setContentView(localView);
-            mProgressDialog.getWindow().addFlags(Window.FEATURE_ACTION_BAR);
-            mProgressDialog.getWindow().addFlags(32);
-            mProgressDialog.getWindow().addFlags(16);
-            mProgressDialog.getWindow().setLayout(-2, -2);
+            if (mProgressDialog.getWindow() != null) {
+                mProgressDialog.getWindow().addFlags(Window.FEATURE_ACTION_BAR);
+                mProgressDialog.getWindow().addFlags(32);
+                mProgressDialog.getWindow().addFlags(16);
+                mProgressDialog.getWindow().setLayout(-2, -2);
+            }
             WindowManager.LayoutParams localLayoutParams = mProgressDialog.getWindow().getAttributes();
             localLayoutParams.gravity = 49;
             localLayoutParams.y = getResources().getDimensionPixelOffset(R.dimen.mx_tv_progress_dialog_margin_top);
@@ -470,10 +472,12 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
             mDialogVolumeIcon = (ImageView) localView.findViewById(R.id.mx_volume_icon);
             mVolumeDialog = new Dialog(getContext(), R.style.mx_style_dialog_progress);
             mVolumeDialog.setContentView(localView);
-            mVolumeDialog.getWindow().addFlags(8);
-            mVolumeDialog.getWindow().addFlags(32);
-            mVolumeDialog.getWindow().addFlags(16);
-            mVolumeDialog.getWindow().setLayout(-2, -2);
+            if (mVolumeDialog.getWindow() != null) {
+                mVolumeDialog.getWindow().addFlags(8);
+                mVolumeDialog.getWindow().addFlags(32);
+                mVolumeDialog.getWindow().addFlags(16);
+                mVolumeDialog.getWindow().setLayout(-2, -2);
+            }
             WindowManager.LayoutParams localLayoutParams = mVolumeDialog.getWindow().getAttributes();
             localLayoutParams.gravity = 49;
             localLayoutParams.y = getContext().getResources()

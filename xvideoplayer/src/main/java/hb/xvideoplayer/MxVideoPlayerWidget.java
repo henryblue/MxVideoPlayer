@@ -470,10 +470,12 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
             mDialogIcon = ((ImageView) localView.findViewById(R.id.duration_image_tip));
             mProgressDialog = new Dialog(getContext(), R.style.mx_style_dialog_progress);
             mProgressDialog.setContentView(localView);
-            mProgressDialog.getWindow().addFlags(Window.FEATURE_ACTION_BAR);
-            mProgressDialog.getWindow().addFlags(32);
-            mProgressDialog.getWindow().addFlags(16);
-            mProgressDialog.getWindow().setLayout(-2, -2);
+            if (mProgressDialog.getWindow() != null) {
+                mProgressDialog.getWindow().addFlags(Window.FEATURE_ACTION_BAR);
+                mProgressDialog.getWindow().addFlags(32);
+                mProgressDialog.getWindow().addFlags(16);
+                mProgressDialog.getWindow().setLayout(-2, -2);
+            }
             WindowManager.LayoutParams localLayoutParams = mProgressDialog.getWindow().getAttributes();
             localLayoutParams.gravity = 49;
             localLayoutParams.y = getResources().getDimensionPixelOffset(R.dimen.mx_progress_dialog_margin_top);
@@ -500,10 +502,12 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
             mDialogVolumeProgressBar = ((ProgressBar) localView.findViewById(R.id.volume_progressbar));
             mVolumeDialog = new Dialog(getContext(), R.style.mx_style_dialog_progress);
             mVolumeDialog.setContentView(localView);
-            mVolumeDialog.getWindow().addFlags(8);
-            mVolumeDialog.getWindow().addFlags(32);
-            mVolumeDialog.getWindow().addFlags(16);
-            mVolumeDialog.getWindow().setLayout(-2, -2);
+            if (mVolumeDialog.getWindow() != null) {
+                mVolumeDialog.getWindow().addFlags(8);
+                mVolumeDialog.getWindow().addFlags(32);
+                mVolumeDialog.getWindow().addFlags(16);
+                mVolumeDialog.getWindow().setLayout(-2, -2);
+            }
             WindowManager.LayoutParams localLayoutParams = mVolumeDialog.getWindow().getAttributes();
             localLayoutParams.gravity = 49;
             localLayoutParams.y = getContext().getResources()
@@ -523,10 +527,12 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
             mDialogBrightnessProgressBar = ((ProgressBar) localView.findViewById(R.id.brightness_progressbar));
             mBrightnessDialog = new Dialog(getContext(), R.style.mx_style_dialog_progress);
             mBrightnessDialog.setContentView(localView);
-            mBrightnessDialog.getWindow().addFlags(8);
-            mBrightnessDialog.getWindow().addFlags(32);
-            mBrightnessDialog.getWindow().addFlags(16);
-            mBrightnessDialog.getWindow().setLayout(-2, -2);
+            if (mBrightnessDialog.getWindow() != null) {
+                mBrightnessDialog.getWindow().addFlags(8);
+                mBrightnessDialog.getWindow().addFlags(32);
+                mBrightnessDialog.getWindow().addFlags(16);
+                mBrightnessDialog.getWindow().setLayout(-2, -2);
+            }
             WindowManager.LayoutParams localLayoutParams = mBrightnessDialog.getWindow().getAttributes();
             localLayoutParams.gravity = 49;
             localLayoutParams.y = getContext().getResources()

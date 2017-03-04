@@ -10,8 +10,6 @@ import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
-import android.view.Window;
-import android.view.WindowManager;
 
 import java.util.Formatter;
 import java.util.Locale;
