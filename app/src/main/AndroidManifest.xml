@@ -23,6 +23,8 @@
         <activity android:name=".AutoTinyWindowActivity" />
         <activity android:name=".ListAutoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".PlaySectionActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity android:name=".ListAutoInsertActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
     </application>

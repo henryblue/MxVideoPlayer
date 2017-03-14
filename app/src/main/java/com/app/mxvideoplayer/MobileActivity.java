@@ -41,6 +41,15 @@ public class MobileActivity extends AppCompatActivity {
             }
         });
 
+        Button buttonSection = (Button) findViewById(R.id.button_play_subsection_video);
+        buttonSection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MobileActivity.this, PlaySectionActivity.class);
+                startActivity(intent);
+            }
+        });
+
         Button btnFullscreen = (Button) findViewById(R.id.button_auto_fullscreen);
         btnFullscreen.setOnClickListener(new View.OnClickListener() {
             @Override

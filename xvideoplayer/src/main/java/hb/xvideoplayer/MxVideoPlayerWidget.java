@@ -86,7 +86,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         mBackButton.setOnClickListener(this);
         mTinyBackImageView.setOnClickListener(this);
     }
-
+    
     @Override
     public boolean startPlay(String url, int screen, Object... objects) {
         if (objects.length == 0) {

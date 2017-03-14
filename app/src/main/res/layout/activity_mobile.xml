@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="210dp"
         app:showBottomProgress="false"/>
-    
+
     <Button
         android:id="@+id/button_list"
         android:layout_width="match_parent"
@@ -26,6 +26,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Auto tiny window"
+        android:textColor="@android:color/black"
+        android:textAllCaps="false"
+        android:layout_margin="8dp"
+        android:textSize="16sp"/>
+
+    <Button
+        android:id="@+id/button_play_subsection_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Play subsection_video"
         android:textColor="@android:color/black"
         android:textAllCaps="false"
         android:layout_margin="8dp"

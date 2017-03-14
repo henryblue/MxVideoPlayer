@@ -217,6 +217,9 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
                         mMediaPlayer.setOnVideoSizeChangedListener(MxMediaManager.this);
                         mMediaPlayer.prepareAsync();
                         mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "reconnect", 1);
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "safe", 0);
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "protocol_whitelist",
+                                "concat,http,tcp,https,tls,file");
                     } catch (Exception e) {
                         e.printStackTrace();
                         Log.e(TAG, "handleMessage: prepare video error: " + e.getMessage());
