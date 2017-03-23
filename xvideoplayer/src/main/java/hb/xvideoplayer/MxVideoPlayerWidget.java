@@ -46,6 +46,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     protected TextView mDialogTotalTime;
     protected ImageView mDialogIcon;
     protected boolean mIsShowBottomProgressBar;
+    private boolean mIsAutoPlay = false;
 
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
 
@@ -53,6 +54,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         MODE_NORMAL,
         MODE_PREPARING,
         MODE_PREPARING_CLEAR,
+        MODE_AUTO_PLAY,
         MODE_PLAYING,
         MODE_PLAYING_CLEAR,
         MODE_PAUSE,
@@ -86,7 +88,29 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         mBackButton.setOnClickListener(this);
         mTinyBackImageView.setOnClickListener(this);
     }
-    
+
+    public boolean autoStartPlay(String url, int screen, Object... objects) {
+        mIsAutoPlay = true;
+        boolean result = false;
+        if (startPlay(url, screen, objects)) {
+            if (TextUtils.isEmpty(mPlayUrl)) {
+                Toast.makeText(getContext(), getResources().getString(R.string.no_url),
+                        Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            if (mCurrentState == CURRENT_STATE_NORMAL) {
+                if (isShowNetworkStateDialog()) {
+                    changeUiShowState(Mode.MODE_NORMAL);
+                    return false;
+                }
+            }
+            preparePlayVideo();
+            result = true;
+        }
+        mIsAutoPlay = false;
+        return result;
+    }
+
     @Override
     public boolean startPlay(String url, int screen, Object... objects) {
         if (objects.length == 0) {
@@ -118,7 +142,11 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         super.setUiPlayState(state);
         switch (mCurrentState) {
             case CURRENT_STATE_NORMAL:
-                changeUiShowState(Mode.MODE_NORMAL);
+                if (!mIsAutoPlay) {
+                    changeUiShowState(Mode.MODE_NORMAL);
+                } else {
+                    changeUiShowState(Mode.MODE_AUTO_PLAY);
+                }
                 break;
             case CURRENT_STATE_PREPARING:
                 changeUiShowState(Mode.MODE_PREPARING);
@@ -235,6 +263,10 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
                 setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
                         View.VISIBLE, View.INVISIBLE, View.VISIBLE);
                 updateStartImage();
+                break;
+            case MODE_AUTO_PLAY:
+                setAllControlsVisible(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
+                        View.VISIBLE, View.INVISIBLE, View.INVISIBLE);
                 break;
             case MODE_PREPARING:
                 setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
@@ -442,7 +474,8 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     private void showWifiDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage(getResources().getString(R.string.tips_not_wifi));
-        builder.setPositiveButton(getResources().getString(R.string.tips_not_wifi_confirm), new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.tips_not_wifi_confirm),
+                new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -450,7 +483,8 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
                 WIFI_TIP_DIALOG_SHOWED = true;
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.tips_not_wifi_cancel), new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.tips_not_wifi_cancel),
+                new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -476,10 +510,12 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
                 mProgressDialog.getWindow().addFlags(16);
                 mProgressDialog.getWindow().setLayout(-2, -2);
             }
-            WindowManager.LayoutParams localLayoutParams = mProgressDialog.getWindow().getAttributes();
-            localLayoutParams.gravity = 49;
-            localLayoutParams.y = getResources().getDimensionPixelOffset(R.dimen.mx_progress_dialog_margin_top);
-            mProgressDialog.getWindow().setAttributes(localLayoutParams);
+            WindowManager.LayoutParams params = mProgressDialog.getWindow().getAttributes();
+            params.gravity = 49;
+            params.y = getResources().getDimensionPixelOffset(R.dimen.mx_progress_dialog_margin_top);
+            params.width = getContext().getResources()
+                    .getDimensionPixelOffset(R.dimen.mx_mobile_dialog_width);
+            mProgressDialog.getWindow().setAttributes(params);
         }
         if (!mProgressDialog.isShowing()) {
             mProgressDialog.show();
@@ -508,11 +544,13 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
                 mVolumeDialog.getWindow().addFlags(16);
                 mVolumeDialog.getWindow().setLayout(-2, -2);
             }
-            WindowManager.LayoutParams localLayoutParams = mVolumeDialog.getWindow().getAttributes();
-            localLayoutParams.gravity = 49;
-            localLayoutParams.y = getContext().getResources()
+            WindowManager.LayoutParams params = mVolumeDialog.getWindow().getAttributes();
+            params.gravity = 49;
+            params.y = getContext().getResources()
                     .getDimensionPixelOffset(R.dimen.mx_volume_dialog_margin_top);
-            mVolumeDialog.getWindow().setAttributes(localLayoutParams);
+            params.width = getContext().getResources()
+                    .getDimensionPixelOffset(R.dimen.mx_mobile_dialog_width);
+            mVolumeDialog.getWindow().setAttributes(params);
         }
         if (!mVolumeDialog.isShowing()) {
             mVolumeDialog.show();
@@ -533,11 +571,13 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
                 mBrightnessDialog.getWindow().addFlags(16);
                 mBrightnessDialog.getWindow().setLayout(-2, -2);
             }
-            WindowManager.LayoutParams localLayoutParams = mBrightnessDialog.getWindow().getAttributes();
-            localLayoutParams.gravity = 49;
-            localLayoutParams.y = getContext().getResources()
+            WindowManager.LayoutParams params = mBrightnessDialog.getWindow().getAttributes();
+            params.gravity = 49;
+            params.y = getContext().getResources()
                     .getDimensionPixelOffset(R.dimen.mx_volume_dialog_margin_top);
-            mBrightnessDialog.getWindow().setAttributes(localLayoutParams);
+            params.width = getContext().getResources()
+                    .getDimensionPixelOffset(R.dimen.mx_mobile_dialog_width);
+            mBrightnessDialog.getWindow().setAttributes(params);
         }
         if (!mBrightnessDialog.isShowing()) {
             mBrightnessDialog.show();

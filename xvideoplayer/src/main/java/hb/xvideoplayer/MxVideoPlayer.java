@@ -51,7 +51,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     public static final String TAG = "MxVideoPlayer";
 
     public static final int FULL_SCREEN_NORMAL_DELAY = 500;
-    private static final int THRESHOLD = 80;
+    private static final int THRESHOLD = 70;
 
     public static final int WINDOW_TINY_WIDTH = 430;
     public static final int WINDOW_TINY_HEIGHT = 400;
@@ -300,7 +300,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                     }
                     if (mChangePosition) {
                         int totalTimeDuration = getDuration();
-                        mSeekTimePosition = (int) (mDownPosition + deltaX * totalTimeDuration / mScreenWidth);
+                        mSeekTimePosition = (int) (mDownPosition + deltaX * 100);
                         if (mSeekTimePosition > totalTimeDuration) {
                             mSeekTimePosition = totalTimeDuration;
                         }
