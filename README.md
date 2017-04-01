@@ -1,7 +1,7 @@
 # MxVideoPlayer
 A simple video player support mobile and TV. Video playback base on [ijkplayer](https://github.com/Bilibili/ijkplayer). The player supports more video formats by default.
 
-##ScreenShot
+## ScreenShot
 <p>
 <img src="screenshot1.jpg" width="305" height="465" />
 &nbsp;&nbsp;&nbsp;
@@ -16,7 +16,7 @@ A simple video player support mobile and TV. Video playback base on [ijkplayer](
 <img src="Tvscreenshot.png" width="80%" />
 </p>
 
-##Usage
+## Usage
 First you can add gradle dependency with command :
 ```
 defaultConfig {
@@ -33,7 +33,7 @@ dependencies {
 To add gradle dependency you need to open build.gradle (in your app folder,not in a project folder) then copy and add the dependencies there in the dependencies block.
 (if you can not play video or other, you can try to use version 1.0.8, but it will make you
 project bigger.)
-##Use in mobile
+## Use in mobile
 1. Add to layout
 ```
     <hb.xvideoplayer.MxVideoPlayerWidget
@@ -70,7 +70,7 @@ if you want auto fullscreen, you can do that:
     MxVideoPlayerWidget.startFullscreen(this, MxVideoPlayerWidget.class, "video url", "video name");
 ```
 
-##Usage in TV
+## Usage in TV
 1. Add to layout
 ```
     <hb.xvideoplayer.MxTvPlayerWidget
