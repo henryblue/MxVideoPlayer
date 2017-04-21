@@ -2,6 +2,6 @@
 <resources>
     <color name="progress_color">#ef6c00</color>
     <color name="secProgress_color">#ffe0e0e0</color>
-    <color name="solid_color">#4c000000</color>
+    <color name="solid_color">#44000000</color>
     <color name="gary">#cc999999</color>
 </resources>

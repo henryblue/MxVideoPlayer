@@ -4,7 +4,7 @@
     <dimen name="mx_layout_bottom_height">40dp</dimen>
     <dimen name="mx_current_time_marginLeft">16dp</dimen>
     <dimen name="mx_total_time_marginRight">16dp</dimen>
-    <dimen name="mx_progress_height">4dp</dimen>
+    <dimen name="mx_progress_height">2dp</dimen>
     <dimen name="mx_progress_padding">8dp</dimen>
     <dimen name="mx_fullscreen_paddingRight">16dp</dimen>
     <dimen name="mx_tiny_width">23dp</dimen>

@@ -107,7 +107,7 @@
         android:id="@+id/mx_bottom_progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="1.5dp"
+        android:layout_height="1dp"
         android:layout_alignParentBottom="true"
         android:max="100"
         android:progressDrawable="@drawable/mx_bottom_progress"/>

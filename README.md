@@ -26,7 +26,7 @@ defaultConfig {
    }
 dependencies {
     ......
-    compile 'com.henryblue.mxvideoplayer:xvideoplayer:1.1.2'
+    compile 'com.henryblue.mxvideoplayer:xvideoplayer:1.1.4'
    }
 
 ```
@@ -39,7 +39,7 @@ project bigger.)
     <hb.xvideoplayer.MxVideoPlayerWidget
         android:id="@+id/mpw_video_player"
         android:layout_width="match_parent"
-        android:layout_height="210dp" />
+        android:layout_height="wrap_content" />
 ```
 2. set play url and start video
 ```

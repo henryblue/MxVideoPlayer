@@ -206,6 +206,21 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (mCurrentScreen == SCREEN_WINDOW_FULLSCREEN || mCurrentScreen == SCREEN_WINDOW_TINY) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
+        int specWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int specHeight = (specWidth * 9) / 16;
+        setMeasuredDimension(specWidth, specHeight);
+
+        int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(specWidth, MeasureSpec.EXACTLY);
+        int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(specHeight, MeasureSpec.EXACTLY);
+        getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
+    }
+
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.mx_start) {
