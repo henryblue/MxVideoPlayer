@@ -104,10 +104,12 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     public boolean requestKeyDown(int keyCode, KeyEvent event) {
         boolean result = false;
         switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 downVolume();
                 result = true;
                 break;
+            case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_VOLUME_UP:
                 upVolume();
                 result = true;
@@ -149,6 +151,8 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
                 setProgress();
                 dismissProgressDialog();
                 break;
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+            case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_VOLUME_UP:
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 mHandler.removeCallbacks(mDismissVolumeCallback);
@@ -446,6 +450,8 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
             WindowManager.LayoutParams localLayoutParams = mProgressDialog.getWindow().getAttributes();
             localLayoutParams.gravity = 49;
             localLayoutParams.y = getResources().getDimensionPixelOffset(R.dimen.mx_tv_progress_dialog_margin_top);
+            localLayoutParams.width = getContext().getResources()
+                    .getDimensionPixelOffset(R.dimen.tv_progress_dialog_width);
             mProgressDialog.getWindow().setAttributes(localLayoutParams);
         }
         if (!mProgressDialog.isShowing()) {
@@ -482,6 +488,8 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
             localLayoutParams.gravity = 49;
             localLayoutParams.y = getContext().getResources()
                     .getDimensionPixelOffset(R.dimen.mx_tv_progress_dialog_margin_top);
+            localLayoutParams.width = getContext().getResources()
+                    .getDimensionPixelOffset(R.dimen.tv_volume_dialog_ll_width);
             mVolumeDialog.getWindow().setAttributes(localLayoutParams);
         }
         if (!mVolumeDialog.isShowing()) {
