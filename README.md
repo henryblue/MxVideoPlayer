@@ -105,5 +105,4 @@ if you want auto fullscreen, you can do that:
         MxVideoPlayer.releaseAllVideos();
     }
 ```
-MxTvPlayerWidget handle Key event including KEYCODE_VOLUME_DOWN, KEYCODE_VOLUME_UP, KEYCODE_DPAD_RIGHT, KEYCODE_DPAD_LEFT,
-KEYCODE_BACK and KEYCODE_ENTER.
+MxTvPlayerWidget handle Key event including KEYCODE_VOLUME_DOWN, KEYCODE_VOLUME_UP, KEYCODE_DPAD_UP, KEYCODE_DPAD_DOWN, KEYCODE_DPAD_RIGHT, KEYCODE_DPAD_LEFT, KEYCODE_BACK and KEYCODE_ENTER.
