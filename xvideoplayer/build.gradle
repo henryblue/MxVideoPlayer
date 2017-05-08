@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/henry-blue/MxVideoPlayer'
     gitUrl = 'https://github.com/henry-blue/MxVideoPlayer.git'
 
-    libraryVersion = '1.1.4'
+    libraryVersion = '1.1.5'
 
     developerId = 'henry'
     developerName = 'henry-blue'
@@ -32,7 +32,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 24
         versionCode 1
-        versionName "1.1.4"
+        versionName "1.1.5"
     }
     buildTypes {
         release {
@@ -51,7 +51,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     //compile 'tv.danmaku.ijk.media:ijkplayer-java:0.7.7.1'
     //compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.7.7.1'
-    compile 'com.henryblue.ijkplayerlibrary:ijkplayer-java:1.0.1'
+    compile 'com.henryblue.ijkplayerlibrary:ijkplayer-java:1.0.2'
 }
 
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
