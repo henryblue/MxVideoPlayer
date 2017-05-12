@@ -26,13 +26,29 @@ defaultConfig {
    }
 dependencies {
     ......
-    compile 'com.henryblue.mxvideoplayer:xvideoplayer:1.1.5'
+    compile 'com.henryblue.mxvideoplayer:xvideoplayer:1.1.7'
    }
 
 ```
-To add gradle dependency you need to open build.gradle (in your app folder,not in a project folder) then copy and add the dependencies there in the dependencies block.
-(if you Android version >= 6.0, you need to use version 1.1.5, however it will make you
-project bigger.)
+To add gradle dependency you need to open build.gradle (in your app folder,not in a project folder) then copy and add the dependencies there in the dependencies block. 
+
+MxVideoPlayer default only support 'armeabi-v7a' CPU style. 
+If you want to support more CPU types, you can choose version 1.1.6, which supports 'armeabi', 'armeabi-v7a', 'arm64-v8a' 'x86' and 'x86_64', but it will make your project Larger, you can configure the type of CPU you need in your project. The configuration is as follows:
+```
+android {
+    ........
+    
+    defaultConfig {
+        ........
+        
+        ndk {
+            // config you want to support device
+            abiFilters 'arm64-v8a', 'armeabi', 'armeabi-v7a', 'x86'
+        }
+    }
+}
+```
+
 ## Use in mobile
 1. Add to layout
 ```
