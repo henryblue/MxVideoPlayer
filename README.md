@@ -26,12 +26,12 @@ defaultConfig {
    }
 dependencies {
     ......
-    compile 'com.henryblue.mxvideoplayer:xvideoplayer:1.1.4'
+    compile 'com.henryblue.mxvideoplayer:xvideoplayer:1.1.5'
    }
 
 ```
 To add gradle dependency you need to open build.gradle (in your app folder,not in a project folder) then copy and add the dependencies there in the dependencies block.
-(if you can not play video or other, you can try to use version 1.0.8, but it will make you
+(if you Android version >= 6.0, you need to use version 1.1.5, however it will make you
 project bigger.)
 ## Use in mobile
 1. Add to layout
