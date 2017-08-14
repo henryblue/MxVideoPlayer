@@ -46,8 +46,19 @@ public class TvActivity extends AppCompatActivity {
                         "One More 完整版");
             }
         });
-    }
 
+        mVideoPlayerWidget.addOnKeyListener(new MxTvPlayerWidget.IOnKeyListener() {
+            @Override
+            public boolean onKeyDown(int keyCode, KeyEvent event) {
+                return false;
+            }
+
+            @Override
+            public boolean onKeyUp(int keyCode, KeyEvent event) {
+                return false;
+            }
+        });
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

@@ -49,6 +49,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     private int mTvSeekPosition;
 
     private OnPlayStateListener mListener;
+    private IOnKeyListener mKeyListener;
     private boolean mIsShowBottomProgressBar;
 
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
@@ -101,6 +102,10 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
         mListener = listener;
     }
 
+    public void addOnKeyListener(IOnKeyListener listener) {
+        mKeyListener = listener;
+    }
+
     public boolean requestKeyDown(int keyCode, KeyEvent event) {
         boolean result = false;
         switch (keyCode) {
@@ -137,6 +142,9 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
             default:
                 break;
         }
+        if (!result && mKeyListener != null) {
+            return mKeyListener.onKeyDown(keyCode, event);
+        }
         return result;
     }
 
@@ -163,10 +171,11 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
                 startDismissControlViewTimer();
                 break;
         }
-        return false;
+
+        return mKeyListener != null && mKeyListener.onKeyUp(keyCode, event);
     }
 
-    private void downVolume() {
+    public void downVolume() {
         int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume - VOLUME_ITEM, 0);
@@ -174,7 +183,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
         showVolumeDialog(VOLUME_ITEM, volumePercent);
     }
 
-    private void upVolume() {
+    public void upVolume() {
         int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume + VOLUME_ITEM, 0);
@@ -182,7 +191,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
         showVolumeDialog(VOLUME_ITEM, volumePercent);
     }
 
-    private void doReverse(int count) {
+    public void doReverse(int count) {
         if (count <= 0) {
             count = 1;
         }
@@ -196,7 +205,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
         showProgressDialog(PROGRESS_ITEM, seekTime, seekTimePosition, totalTime, totalTimeDuration);
     }
 
-    private void doForward(int count) {
+    public void doForward(int count) {
         if (count <= 0) {
             count = 1;
         }
@@ -546,7 +555,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
         }
     }
 
-    public class DismissControlViewTimerTask extends TimerTask {
+    private class DismissControlViewTimerTask extends TimerTask {
 
         @Override
         public void run() {
@@ -574,5 +583,10 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
         void onPlayPrepared();
         void onPlayBufferingUpdate(int percent);
         void OnPlayCompletion();
+    }
+
+    public interface IOnKeyListener {
+        boolean onKeyDown(int keyCode, KeyEvent event);
+        boolean onKeyUp(int keyCode, KeyEvent event);
     }
 }
