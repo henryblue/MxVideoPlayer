@@ -47,6 +47,8 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
     protected ImageView mDialogIcon;
     protected boolean mIsShowBottomProgressBar;
     private boolean mIsAutoPlay = false;
+    private boolean mIsAutoProcessUI = false;
+    private UIStatusChangeListener mUIListener;
 
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
 
@@ -135,6 +137,14 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
             return true;
         }
         return false;
+    }
+
+    public void setUIStatusListener(UIStatusChangeListener listener) {
+        mUIListener = listener;
+    }
+
+    public void setAutoProcessUI(boolean autoPrcUI) {
+        mIsAutoProcessUI = autoPrcUI;
     }
 
     @Override
@@ -249,6 +259,21 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         if (mCurrentScreen == SCREEN_WINDOW_TINY) {
             return;
         }
+
+        if (mUIListener != null) {
+            mUIListener.onUIChange(mode);
+        }
+
+        if (mIsAutoProcessUI) {
+            if (mode == Mode.MODE_NORMAL || mode == Mode.MODE_BUFFERING_CLEAR ||
+                    mode == Mode.MODE_PLAYING || mode == Mode.MODE_PAUSE ||
+                    mode == Mode.MODE_COMPLETE || mode == Mode.MODE_COMPLETE_CLEAR
+                    || mode == Mode.MODE_ERROR) {
+                updateStartImage();
+            }
+            return;
+        }
+
         switch (mode) {
             case MODE_NORMAL:
                 setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.VISIBLE,
@@ -606,7 +631,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         }
     }
 
-    public class DismissControlViewTimerTask extends TimerTask {
+    private class DismissControlViewTimerTask extends TimerTask {
 
         @Override
         public void run() {
@@ -628,5 +653,9 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
                 }
             }
         }
+    }
+
+    public interface UIStatusChangeListener {
+        void onUIChange(Mode mode);
     }
 }
