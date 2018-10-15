@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
+import android.view.WindowManager;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -109,11 +110,14 @@ class MxUtils {
         return nowBrightnessValue;
     }
 
-    static void setWindowBrightness(Activity activity, int brightness) {
-        try {
-            Settings.System.putInt(activity.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, brightness);
-        } catch (Exception localException) {
-            localException.printStackTrace();
+    static void setWindowBrightness(Activity activity, float brightness) {
+        WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+        lp.screenBrightness = brightness / 255.0f;
+        if (lp.screenBrightness > 1) {
+            lp.screenBrightness = 1;
+        } else if (lp.screenBrightness < 0.1) {
+            lp.screenBrightness = (float) 0.1;
         }
+        activity.getWindow().setAttributes(lp);
     }
 }
