@@ -216,10 +216,18 @@ public class MxMediaManager implements IMediaPlayer.OnPreparedListener, IMediaPl
                         mMediaPlayer.setOnInfoListener(MxMediaManager.this);
                         mMediaPlayer.setOnVideoSizeChangedListener(MxMediaManager.this);
                         mMediaPlayer.prepareAsync();
-                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "reconnect", 1);
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "rtsp_transport", "tcp");
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "rtsp_flags", "prefer_tcp");
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "buffer_size", 100 * 1024);
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 10240L);
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "flush_packets", 1L);
                         mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "safe", 0);
                         mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "protocol_whitelist",
                                 "concat,http,tcp,https,tls,file");
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "reconnect", 1);
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "enable-accurate-seek", 1);
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "packet-buffering", 0L);
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1L);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Log.e(TAG, "handleMessage: prepare video error: " + e.getMessage());

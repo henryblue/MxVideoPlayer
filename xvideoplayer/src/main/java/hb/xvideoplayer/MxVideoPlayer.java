@@ -722,6 +722,10 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         showSupportActionBar(getContext());
     }
 
+    public void setVideoOption(int category, String name, long value) {
+        MxMediaManager.getInstance().getPlayer().setOption(category, name, value);
+    }
+
     @Override
     public void onPrepared() {
         Log.i(TAG, "onPrepared====[" + this.hashCode() + "] ");
