@@ -27,8 +27,8 @@ public class TvActivity extends AppCompatActivity {
         }
 
         mVideoPlayerWidget = (MxTvPlayerWidget) findViewById(R.id.mpw_video_player);
-        mVideoPlayerWidget.startPlay("http://112.253.22.162/8/l/r/m/u/lrmuartyvcqytunfrqatzthrsrsmnm/" +
-                "hc.yinyuetai.com/A1460152D6652EB21A149B9DF5F7E92E.flv", "LUV Apink");
+        mVideoPlayerWidget.startPlay("http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/7cfe01a45285890811342490244/v.f30.mp4",
+                "汽车");
 
         mVideoPlayerWidget.setOnPlayStateListener(new MxTvPlayerWidget.OnPlayStateListener() {
             @Override
@@ -41,9 +41,6 @@ public class TvActivity extends AppCompatActivity {
 
             @Override
             public void OnPlayCompletion() {
-                mVideoPlayerWidget.autoStartPlay("http://112.253.22.156/14/j/s/s/d/" +
-                        "jssdpypuuzgutqiolfvbxizywfjzjd/hc.yinyuetai.com/F9640146F51C894E3B31592989D7AE28.flv",
-                        "One More 完整版");
             }
         });
 

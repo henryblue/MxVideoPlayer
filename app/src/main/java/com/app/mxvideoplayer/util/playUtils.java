@@ -3,16 +3,16 @@ package com.app.mxvideoplayer.util;
 
 public class playUtils {
     public static String[] videoUrls = {
-            "http://112.253.22.163/4/p/p/q/v/ppqvlatwcebccqgrthiutjkityurza/hc.yinyuetai.com/59EC014EDDFE31808075899973863AAD.flv",
-            "http://112.253.22.162/7/i/u/l/x/iulxxctvtlkdvznykfxqbftlwlvfdk/hc.yinyuetai.com/010C014EBF2B4B726D9D67F0BB236F6D.flv",
-            "http://112.253.22.159/30/u/h/c/t/uhcthkfakxfueltyfrickugkkshedl/hc.yinyuetai.com/29A801589BED77C3D62884A3A15BA1F3.mp4",
-            "http://112.253.22.164/4/a/q/t/z/aqtzkpyhsvnomtvjbskpjjkkyjeaaq/hc.yinyuetai.com/0EAD0158BD54A2F9F242E02065A966C2.mp4",
-            "http://112.253.22.157/19/f/k/n/n/fknntmnmqvxxwomhukhftbjwrtmyci/hc.yinyuetai.com/45580153801E6B6083057A09E1811AA1.flv",
-            "http://112.253.22.163/4/u/x/o/t/uxotdanllblkoxoegkthfpapivsywh/hc.yinyuetai.com/E2B60155AAA1AD8BD01A027BCB2540DE.flv",
-            "http://112.253.22.162/5/k/s/a/r/ksarzmxsvukrlrlrncyqgqvguwgnww/hc.yinyuetai.com/BA710157626FB47F1B68C35E974120C7.flv",
-            "http://112.253.22.156/14/j/s/s/d/jssdpypuuzgutqiolfvbxizywfjzjd/hc.yinyuetai.com/F9640146F51C894E3B31592989D7AE28.flv",
-            "http://220.194.199.186/1/a/o/i/q/aoiqwkcqlcyqmhyaprtbhafndapzoe/hc.yinyuetai.com/70FD014F061C972D24F5EDE5381BE543.flv",
-            "http://112.253.22.162/4/d/p/k/c/dpkcdjdhtzzfntsuoxhozwayhjvwke/hc.yinyuetai.com/ED44014EF18FF6700FBF10169A21144E.flv"};
+            "http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/7cfe01a45285890811342490244/v.f30.mp4",
+            "http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/b0d244d75285890811387532689/v.f30.mp4",
+            "http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/7ab8e5845285890811383453600/v.f30.mp4",
+            "http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/75c622485285890811383213286/v.f30.mp4",
+            "http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/3774ce4b5285890811127255962/v.f30.mp4",
+            "http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/5eeb3f4e5285890811345246477/v.f30.mp4",
+            "http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/7419460d5285890811311829836/v.f30.mp4",
+            "http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/7cfe01a45285890811342490244/v.f30.mp4",
+            "http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/b0d244d75285890811387532689/v.f30.mp4",
+            "http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/7ab8e5845285890811383453600/v.f30.mp4"};
 
     public static String[] videoThumbs = {
             "http://img3.yytcdn.com/video/mv/140108/850708/D81901436FF172396A44128BAC8C3707_240x135.jpeg",
@@ -27,14 +27,14 @@ public class playUtils {
             "http://img2.yytcdn.com/video/mv/150803/2343277/-M-1d82f75d9955016a3463b59b05445855_240x135.png"};
 
     public static String[] videoTitles = {
-            "B.B.B(Big Baby Baby)",
-            "Number 9 完整版 -- T-ara",
-            "I & I -- Leola",
-            "MAXY(火力全开) 官方版",
-            "SKETCH 15禁版",
-            "I Like That 完整版",
-            "让我心动(Only One) 完整版",
-            "One More 完整版",
-            "Glue 官方完整版",
-            "I Feel You 完整版"};
+            "汽车",
+            "明天你是否依然爱我",
+            "你好李焕英",
+            "紧急救援",
+            "维密天使",
+            "开箱倒车",
+            "西双版纳",
+            "汽车",
+            "明天你是否依然爱我",
+            "你好李焕英"};
 }

@@ -19,8 +19,6 @@ public interface MxMediaPlayerListener {
 
     boolean quitFullscreenOrTinyListener();
 
-    void onScrollChange();
-
     int getScreenType();
 
     String getUrl();

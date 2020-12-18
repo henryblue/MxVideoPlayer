@@ -1,6 +1,7 @@
 package com.app.mxvideoplayer;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -37,7 +38,7 @@ public class VideoListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        final ViewHolder holder;
         if (null == convertView) {
             holder = new ViewHolder();
             convertView = View.inflate(mContext, R.layout.layout_item_list, null);
@@ -46,15 +47,25 @@ public class VideoListAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
-        holder.mPlayerWidget.startPlay(playUtils.videoUrls[position], MxVideoPlayer.SCREEN_LAYOUT_LIST,
+        String url = playUtils.videoUrls[position];
+        holder.mPlayerWidget.startPlay(url, MxVideoPlayer.SCREEN_LAYOUT_LIST,
                 playUtils.videoTitles[position]);
+//        holder.mPlayerWidget.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+//            @Override
+//            public void onViewAttachedToWindow(View v) {
+//                if (holder.mPlayerWidget.getState() == MxVideoPlayer.CURRENT_STATE_PLAYING) {
+//                    holder.mPlayerWidget.quitWindowTiny();
+//                }
+//            }
+//
+//            @Override
+//            public void onViewDetachedFromWindow(View v) {
+//                if (holder.mPlayerWidget.getState() == MxVideoPlayer.CURRENT_STATE_PLAYING) {
+//                    holder.mPlayerWidget.startWindowTiny();
+//                }
+//            }
+//        });
 
-        Glide.with(mContext)
-                .load(playUtils.videoThumbs[position])
-                .centerCrop()
-                .crossFade()
-                .into(holder.mPlayerWidget.mThumbImageView);
         return convertView;
     }
 

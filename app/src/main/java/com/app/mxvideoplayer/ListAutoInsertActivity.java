@@ -3,7 +3,6 @@ package com.app.mxvideoplayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -27,23 +26,27 @@ public class ListAutoInsertActivity extends AppCompatActivity {
         }
         View view = View.inflate(ListAutoInsertActivity.this, R.layout.head_normal_list, null);
         mListView.addHeaderView(view);
-        MxVideoPlayerWidget playerWidget = (MxVideoPlayerWidget) view.findViewById(R.id.mx_video_player);
-        playerWidget.startPlay("http://112.253.22.162/8/l/r/m/u/lrmuartyvcqytunfrqatzthrsrsmnm/" +
-                        "hc.yinyuetai.com/A1460152D6652EB21A149B9DF5F7E92E.flv",
-                MxVideoPlayer.SCREEN_LAYOUT_NORMAL, "LUV Apink");
-
-        mListView.setAdapter(new ArrayAdapter<>(ListAutoInsertActivity.this, android.R.layout.simple_list_item_1, dataList));
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        final MxVideoPlayerWidget playerWidget = (MxVideoPlayerWidget) view.findViewById(R.id.mx_video_player);
+        playerWidget.startPlay("http://1400299523.vod2.myqcloud.com/d457202dvodtranscq1400299523/b0d244d75285890811387532689/v.f30.mp4",
+                MxVideoPlayer.SCREEN_LAYOUT_NORMAL, "明天你是否依然爱我");
+        playerWidget.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
+            public void onViewAttachedToWindow(View v) {
+                if (playerWidget.getState() == MxVideoPlayer.CURRENT_STATE_PLAYING) {
+                    playerWidget.quitWindowTiny();
+                }
             }
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                MxVideoPlayer.onScroll();
+            public void onViewDetachedFromWindow(View v) {
+                if (playerWidget.getState() == MxVideoPlayer.CURRENT_STATE_PLAYING) {
+                    playerWidget.startWindowTiny();
+                }
             }
         });
+
+        mListView.setAdapter(new ArrayAdapter<>(ListAutoInsertActivity.this,
+                android.R.layout.simple_list_item_1, dataList));
     }
 
     @Override

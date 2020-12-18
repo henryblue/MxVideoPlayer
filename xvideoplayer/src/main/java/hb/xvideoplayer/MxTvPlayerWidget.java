@@ -220,7 +220,7 @@ public class MxTvPlayerWidget extends MxVideoPlayer {
     }
 
     private void setProgress() {
-        MxMediaManager.getInstance().getPlayer().seekTo(mTvSeekPosition);
+        MxMediaManager.getInstance().seekTo(mTvSeekPosition);
         mProgressBar.setProgress(mDialogProgressBar.getProgress());
         mTvDownPosition = 0;
     }

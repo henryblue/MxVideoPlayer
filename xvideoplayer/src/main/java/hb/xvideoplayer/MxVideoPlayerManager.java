@@ -1,6 +1,7 @@
 package hb.xvideoplayer;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;

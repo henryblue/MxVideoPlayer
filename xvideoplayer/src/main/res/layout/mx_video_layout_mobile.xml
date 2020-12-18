@@ -9,12 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <hb.xvideoplayer.MxImageView
-        android:id="@+id/mx_cache"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"/>
-
     <ImageView
         android:id="@+id/mx_thumb"
         android:layout_width="match_parent"
@@ -130,6 +124,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:indeterminateDrawable="@drawable/mx_loading"
+        android:indeterminateDuration="1000"
         android:visibility="invisible"/>
 
     <ImageView

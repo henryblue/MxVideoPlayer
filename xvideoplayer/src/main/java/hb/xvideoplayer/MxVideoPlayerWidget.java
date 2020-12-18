@@ -277,7 +277,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         switch (mode) {
             case MODE_NORMAL:
                 setAllControlsVisible(View.VISIBLE, View.INVISIBLE, View.VISIBLE,
-                        View.INVISIBLE, View.VISIBLE, View.INVISIBLE);
+                        View.GONE, View.VISIBLE, View.INVISIBLE);
                 updateStartImage();
                 break;
             case MODE_BUFFERING:
@@ -420,7 +420,7 @@ public class MxVideoPlayerWidget extends MxVideoPlayer {
         } else if (id == R.id.mx_quit_tiny) {
             if (MxVideoPlayerManager.mCurScrollListener.get() != null) {
                 if (!MxVideoPlayerManager.mCurScrollListener.get().getUrl().
-                        equals(MxMediaManager.getInstance().getPlayer().getDataSource())) {
+                        equals(MxMediaManager.getInstance().mCurrentUrl)) {
                     releaseAllVideos();
                     return;
                 }

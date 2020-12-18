@@ -1,5 +1,6 @@
 package hb.xvideoplayer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.util.AttributeSet;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
  * NOTE! Can not fullscreen RelativeLayout, need to nest a LinearLayout
  * onMeasure与MxTextureView里的相同, 参考VideoView中的onMeasure
  */
+@SuppressLint("AppCompatCustomView")
 public class MxImageView extends ImageView {
     protected static final String TAG = "MxImageView";
     protected static final boolean DEBUG = false;

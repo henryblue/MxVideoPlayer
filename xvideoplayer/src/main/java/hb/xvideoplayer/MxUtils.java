@@ -1,6 +1,7 @@
 package hb.xvideoplayer;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -10,12 +11,16 @@ import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
+import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 
 import java.util.Formatter;
 import java.util.Locale;
 
 class MxUtils {
+
+    public static int SYSTEM_UI = 0;
 
     static  String stringForTime(long milliseconds) {
         if (milliseconds < 0 || milliseconds >= 24 * 60 * 60 * 1000) {
@@ -119,5 +124,34 @@ class MxUtils {
             lp.screenBrightness = (float) 0.1;
         }
         activity.getWindow().setAttributes(lp);
+    }
+
+
+    @SuppressLint("NewApi")
+    public static void hideSystemUI(Context context) {
+        int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        ;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            uiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        }
+        SYSTEM_UI = getWindow(context).getDecorView().getSystemUiVisibility();
+        getWindow(context).getDecorView().setSystemUiVisibility(uiOptions);
+
+    }
+
+    @SuppressLint("NewApi")
+    public static void showSystemUI(Context context) {
+        getWindow(context).getDecorView().setSystemUiVisibility(SYSTEM_UI);
+    }
+
+    public static Window getWindow(Context context) {
+        if (scanForActivity(context) != null) {
+            return scanForActivity(context).getWindow();
+        } else {
+            return scanForActivity(context).getWindow();
+        }
     }
 }
