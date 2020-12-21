@@ -39,16 +39,7 @@ public class MobileActivity extends AppCompatActivity {
         buttonAutoList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MobileActivity.this, AutoTinyWindowActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        Button buttonSection = (Button) findViewById(R.id.button_play_subsection_video);
-        buttonSection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MobileActivity.this, PlaySectionActivity.class);
+                Intent intent = new Intent(MobileActivity.this, ListAutoInsertActivity.class);
                 startActivity(intent);
             }
         });

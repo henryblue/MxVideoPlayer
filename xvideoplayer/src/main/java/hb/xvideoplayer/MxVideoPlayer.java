@@ -113,7 +113,6 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
     protected int mGestureDownVolume;
     protected int mGestureDownBrightness;
     protected int mSeekTimePosition;
-    protected ViewDragHelper mDragHelper;
     protected boolean mTouchingProgressBar = false;
 
     public static long mLastAutoFullscreenTime = 0;
@@ -135,13 +134,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
                 }
             };
 
-    private ViewDragHelper.Callback mDragHelperCallback = new ViewDragHelper.Callback() {
 
-        @Override
-        public boolean tryCaptureView(View child, int pointerId) {
-            return true;
-        }
-    };
 
     public MxVideoPlayer(Context context) {
         this(context, null);
@@ -177,7 +170,6 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         mScreenHeight = getContext().getResources().getDisplayMetrics().heightPixels;
         mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         mHandler = new Handler();
-        mDragHelper = ViewDragHelper.create(this, mDragHelperCallback);
     }
 
     public boolean startPlay(String url, int screen, Object... objects) {
@@ -404,6 +396,7 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         if (oldView != null) {
             vp.removeView(oldView);
         }
+
         if (mTextureViewContainer.getChildCount() > 0) {
             mTextureViewContainer.removeAllViews();
         }
@@ -411,10 +404,16 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
         try {
             Constructor<MxVideoPlayer> constructor = (Constructor<MxVideoPlayer>) MxVideoPlayer.this.getClass().getConstructor(Context.class);
             MxVideoPlayer mxVideoPlayer = constructor.newInstance(getContext());
-            mxVideoPlayer.setId(R.id.mx_tiny_screen_id);
+            MxDragLayout dragLayout = new MxDragLayout(getContext());
+            dragLayout.setId(R.id.mx_tiny_screen_id);
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(WINDOW_TINY_WIDTH, WINDOW_TINY_HEIGHT);
             params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
-            vp.addView(mxVideoPlayer, params);
+            dragLayout.addView(mxVideoPlayer, params);
+
+            FrameLayout.LayoutParams dragParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
+            vp.addView(dragLayout, dragParams);
+
             mxVideoPlayer.startPlay(mPlayUrl, SCREEN_WINDOW_TINY, mObjects);
             mxVideoPlayer.addTextureView();
             MxVideoPlayerManager.putListener(mxVideoPlayer);
@@ -825,7 +824,12 @@ public abstract class MxVideoPlayer extends FrameLayout implements MxMediaPlayer
             }
             ViewGroup vp = (ViewGroup) scanForActivity(getContext())
                     .findViewById(Window.ID_ANDROID_CONTENT);
-            vp.removeView(this);
+            View oldView = vp.findViewById(R.id.mx_tiny_screen_id);
+            if (oldView != null) {
+                vp.removeView(oldView);
+            } else {
+                vp.removeView(this);
+            }
             MxMediaManager.getInstance().mLastState = mCurrentState;
             MxVideoPlayerManager.popListener();
             MxMediaPlayerListener currentListener = MxVideoPlayerManager.getCurrentListener();

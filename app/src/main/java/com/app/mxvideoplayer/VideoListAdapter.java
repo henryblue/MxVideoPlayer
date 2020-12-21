@@ -50,21 +50,6 @@ public class VideoListAdapter extends BaseAdapter {
         String url = playUtils.videoUrls[position];
         holder.mPlayerWidget.startPlay(url, MxVideoPlayer.SCREEN_LAYOUT_LIST,
                 playUtils.videoTitles[position]);
-//        holder.mPlayerWidget.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-//            @Override
-//            public void onViewAttachedToWindow(View v) {
-//                if (holder.mPlayerWidget.getState() == MxVideoPlayer.CURRENT_STATE_PLAYING) {
-//                    holder.mPlayerWidget.quitWindowTiny();
-//                }
-//            }
-//
-//            @Override
-//            public void onViewDetachedFromWindow(View v) {
-//                if (holder.mPlayerWidget.getState() == MxVideoPlayer.CURRENT_STATE_PLAYING) {
-//                    holder.mPlayerWidget.startWindowTiny();
-//                }
-//            }
-//        });
 
         return convertView;
     }
